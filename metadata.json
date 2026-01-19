@@ -1,0 +1,7 @@
+{
+  "name": "搵食寶 (Gourmet Finder HK)",
+  "description": "A sophisticated restaurant search application for Hong Kong, powered by Gemini 2.5 Google Maps grounding. Features OpenRice-inspired filtering (District, Cuisine, Price, Occasion) with a modern Cantonese interface.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
