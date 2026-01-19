@@ -12,21 +12,13 @@ export const searchRestaurants = async (
 ): Promise<SearchResult> => {
   const model = "gemini-2.5-flash";
   
-  // Prioritize manual district if the selection is "全部地區" or if provided
-  const targetArea = filters.district !== '全部地區' ? filters.district : (query.includes(' ') ? '' : filters.city);
-  
   const prompt = `
-    I am looking for restaurants in ${filters.city}, ${filters.country}.
-    STRICT FILTERING REQUIRED:
-    - Target Location/Area: ${filters.district === '全部地區' ? filters.city : filters.district}
-    - Cuisine: ${filters.cuisine === '全部菜式' ? 'any' : filters.cuisine}
-    - Keywords: ${query || "recommendations"}
+    Find restaurants in ${filters.city}, ${filters.country}.
+    Area: ${filters.district === '全部地區' ? filters.city : filters.district}
+    Cuisine: ${filters.cuisine === '全部菜式' ? 'any' : filters.cuisine}
+    Keywords: ${query || "recommendations"}
     
-    CRITICAL: 
-    - Only return places that accurately match the selected cuisine and location.
-    - If a specific manual area was provided in the query or selection, prioritize it.
-    - Use Google Maps tool.
-    - NO text summary.
+    Return the results using the Google Maps tool.
   `;
 
   try {
@@ -46,7 +38,8 @@ export const searchRestaurants = async (
       },
     });
 
-    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+    const metadata = response.candidates?.[0]?.groundingMetadata;
+    const chunks = metadata?.groundingChunks || [];
     
     const sources = chunks
       .filter(chunk => chunk.maps)
@@ -55,7 +48,7 @@ export const searchRestaurants = async (
         url: chunk.maps!.uri
       }));
 
-    return { text: "", sources };
+    return { text: response.text || "", sources };
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw new Error(lang === 'zh' ? "搜尋發生錯誤，請稍後再試。" : "Search error. Please try again later.");
