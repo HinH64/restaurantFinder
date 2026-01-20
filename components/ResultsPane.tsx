@@ -1,19 +1,34 @@
 import React from 'react';
-import { SearchResult } from '../types';
+import { PlaceResult } from '../types';
 import { UIStrings } from '../constants/uiStrings';
 import { MapIcon, SadFaceIcon } from './icons';
 
 interface ResultsPaneProps {
-  result: SearchResult;
-  selectedPlaceTitle: string | null;
-  onSelectPlace: (title: string) => void;
+  places: PlaceResult[];
+  selectedPlaceId: string | null;
+  onSelectPlace: (place: PlaceResult) => void;
   onClose: () => void;
   t: UIStrings;
 }
 
+const StarIcon: React.FC<{ className?: string }> = ({ className = "h-4 w-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
+    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+  </svg>
+);
+
+const PriceLevel: React.FC<{ level?: number }> = ({ level }) => {
+  if (!level) return null;
+  return (
+    <span className="text-green-600 font-bold text-xs">
+      {'$'.repeat(level)}
+    </span>
+  );
+};
+
 const ResultsPane: React.FC<ResultsPaneProps> = ({
-  result,
-  selectedPlaceTitle,
+  places,
+  selectedPlaceId,
   onSelectPlace,
   onClose,
   t
@@ -22,7 +37,7 @@ const ResultsPane: React.FC<ResultsPaneProps> = ({
     <div className="w-full sm:w-80 bg-white border-r border-gray-200 flex flex-col shrink-0 z-30 overflow-hidden animate-in slide-in-from-left duration-300 shadow-2xl">
       <div className="p-5 border-b border-gray-100 flex items-center justify-between shrink-0 bg-white">
         <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest">
-          {t.mapResults}
+          {t.mapResults} ({places.length})
         </p>
         <button
           onClick={onClose}
@@ -31,8 +46,8 @@ const ResultsPane: React.FC<ResultsPaneProps> = ({
           {t.closeResults}
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-gray-50/30">
-        {result.sources.length === 0 && (
+      <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50/30">
+        {places.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center px-4">
             <div className="bg-gray-100 p-4 rounded-full mb-4">
               <SadFaceIcon className="h-8 w-8 text-gray-400" />
@@ -40,32 +55,67 @@ const ResultsPane: React.FC<ResultsPaneProps> = ({
             <p className="text-sm text-gray-500 font-bold">{t.emptyMap}</p>
           </div>
         )}
-        {result.sources.map((s, i) => (
+        {places.map((place) => (
           <button
-            key={i}
-            onClick={() => onSelectPlace(s.title)}
-            className={`w-full text-left group flex flex-col p-5 border-2 rounded-2xl transition-all ${
-              selectedPlaceTitle === s.title
-                ? 'bg-orange-500 border-orange-500 shadow-lg shadow-orange-500/30 -translate-y-1'
-                : 'bg-white border-white hover:border-orange-200 hover:shadow-md'
+            key={place.placeId}
+            onClick={() => onSelectPlace(place)}
+            className={`w-full text-left group flex flex-col border-b border-gray-100 transition-all ${
+              selectedPlaceId === place.placeId
+                ? 'bg-orange-50 border-l-4 border-l-orange-500'
+                : 'bg-white hover:bg-gray-50 border-l-4 border-l-transparent'
             }`}
           >
-            <div
-              className={`text-base font-black transition-colors ${
-                selectedPlaceTitle === s.title
-                  ? 'text-white'
-                  : 'text-gray-900 group-hover:text-orange-600'
-              } line-clamp-2 leading-tight`}
-            >
-              {s.title}
-            </div>
-            <div
-              className={`mt-3 flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider ${
-                selectedPlaceTitle === s.title ? 'text-orange-100' : 'text-orange-500'
-              }`}
-            >
-              <MapIcon className="h-4 w-4" />
-              {t.viewOnMap}
+            {place.photoUrl && (
+              <div className="w-full h-32 overflow-hidden">
+                <img
+                  src={place.photoUrl}
+                  alt={place.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div className="p-4">
+              <div
+                className={`text-sm font-black transition-colors ${
+                  selectedPlaceId === place.placeId
+                    ? 'text-orange-600'
+                    : 'text-gray-900 group-hover:text-orange-600'
+                } line-clamp-2 leading-tight`}
+              >
+                {place.name}
+              </div>
+
+              <div className="flex items-center gap-2 mt-2">
+                {place.rating && (
+                  <div className="flex items-center gap-1">
+                    <StarIcon className="h-4 w-4 text-orange-400" />
+                    <span className="text-sm font-bold text-gray-700">{place.rating}</span>
+                    {place.userRatingsTotal && (
+                      <span className="text-xs text-gray-400">({place.userRatingsTotal})</span>
+                    )}
+                  </div>
+                )}
+                <PriceLevel level={place.priceLevel} />
+                {place.openNow !== undefined && (
+                  <span className={`text-xs font-bold ${place.openNow ? 'text-green-600' : 'text-red-500'}`}>
+                    {place.openNow ? '營業中' : '已關閉'}
+                  </span>
+                )}
+              </div>
+
+              <p className="text-xs text-gray-500 mt-2 line-clamp-2">
+                {place.address}
+              </p>
+
+              <div
+                className={`mt-3 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${
+                  selectedPlaceId === place.placeId ? 'text-orange-500' : 'text-gray-400 group-hover:text-orange-500'
+                }`}
+              >
+                <MapIcon className="h-3 w-3" />
+                {t.viewOnMap}
+              </div>
             </div>
           </button>
         ))}

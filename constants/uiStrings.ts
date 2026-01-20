@@ -19,11 +19,13 @@ export interface UIStrings {
   regionLabel: string;
   districtLabel: string;
   locError: string;
+  selectedRestaurant: string;
+  openInGoogleMaps: string;
 }
 
 export const UI_STRINGS: Record<Language, UIStrings> = {
   zh: {
-    title: "搵食寶",
+    title: "搵食",
     placeholder: "你想搵咩餐廳？(例如: 壽司, 漢堡包)",
     search: "搜尋",
     filters: "篩選條件",
@@ -40,7 +42,9 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     orDivider: "或使用預設地區",
     regionLabel: "區域",
     districtLabel: "地區",
-    locError: "無法獲取您的位置，請檢查權限。"
+    locError: "無法獲取您的位置，請檢查權限。",
+    selectedRestaurant: "已選擇餐廳",
+    openInGoogleMaps: "喺 Google Maps 開啟"
   },
   en: {
     title: "Gourmet Finder",
@@ -60,7 +64,9 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     orDivider: "OR select from list",
     regionLabel: "Region",
     districtLabel: "District",
-    locError: "Cannot get your location. Please check permissions."
+    locError: "Cannot get your location. Please check permissions.",
+    selectedRestaurant: "Selected Restaurant",
+    openInGoogleMaps: "Open in Google Maps"
   }
 };
 

@@ -1,15 +1,15 @@
 import React, { useState, useCallback } from 'react';
-import { Language, FilterState, SearchResult } from './types';
-import { UI_STRINGS, DEFAULT_MAP_URL } from './constants/uiStrings';
-import { useGeolocation } from './hooks/useGeolocation';
+import { Language, PlaceResult } from './types';
+import { UI_STRINGS } from './constants/uiStrings';
 import { useFilters } from './hooks/useFilters';
-import { searchRestaurants } from './services/geminiService';
+import { searchPlaces, initPlacesService, getCityCoordinates } from './services/placesService';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import ResultsPane from './components/ResultsPane';
 import MapView from './components/MapView';
 import LoadingOverlay from './components/LoadingOverlay';
 import ErrorBanner from './components/ErrorBanner';
+import RestaurantDetail from './components/RestaurantDetail';
 
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('zh');
@@ -17,17 +17,17 @@ const App: React.FC = () => {
 
   // Search state
   const [query, setQuery] = useState('');
-  const [result, setResult] = useState<SearchResult | null>(null);
+  const [places, setPlaces] = useState<PlaceResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPlaceTitle, setSelectedPlaceTitle] = useState<string | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
   const [showResultsPane, setShowResultsPane] = useState(false);
-
-  const location = useGeolocation();
+  const [mapReady, setMapReady] = useState(false);
 
   const handleClearResults = useCallback(() => {
-    setResult(null);
+    setPlaces([]);
     setShowResultsPane(false);
+    setSelectedPlace(null);
   }, []);
 
   const {
@@ -35,17 +35,28 @@ const App: React.FC = () => {
     manualArea,
     handleFilterChange,
     handleManualAreaChange,
-    handleClearFilters: clearFilters,
-    currentMapUrl,
-    setCurrentMapUrl
+    handleClearFilters: clearFilters
   } = useFilters(handleClearResults);
 
   const t = UI_STRINGS[lang];
 
+  // Get center coordinates based on selected city
+  const mapCenter = getCityCoordinates(filters.city);
+
+  const handleMapReady = useCallback((map: google.maps.Map) => {
+    initPlacesService(map);
+    setMapReady(true);
+  }, []);
+
   const handleSearch = useCallback(async () => {
+    if (!mapReady) {
+      setError(lang === 'zh' ? '地圖載入中，請稍候...' : 'Map is loading, please wait...');
+      return;
+    }
+
     setLoading(true);
     setError(null);
-    setSelectedPlaceTitle(null);
+    setSelectedPlace(null);
 
     const effectiveFilters = { ...filters };
     if (manualArea.trim()) {
@@ -53,44 +64,38 @@ const App: React.FC = () => {
     }
 
     try {
-      const data = await searchRestaurants(query, effectiveFilters, lang, location);
-      setResult(data);
+      const results = await searchPlaces(query, effectiveFilters, lang);
+      setPlaces(results);
       setShowResultsPane(true);
-
-      const isHK = filters.country === '香港';
-      const districtTerm = effectiveFilters.district === '全部地區' ? '' : effectiveFilters.district;
-      const mapQuery = [
-        query,
-        filters.cuisine !== '全部菜式' ? filters.cuisine : '',
-        districtTerm,
-        filters.city,
-        isHK ? 'Hong Kong' : filters.country,
-        'restaurant'
-      ].filter(Boolean).join(' ');
-
-      setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [filters, manualArea, query, lang, location, setCurrentMapUrl]);
+  }, [filters, manualArea, query, lang, mapReady]);
 
   const handleClearFilters = useCallback(() => {
     clearFilters();
     setQuery('');
-    setResult(null);
+    setPlaces([]);
     setShowResultsPane(false);
-    setSelectedPlaceTitle(null);
+    setSelectedPlace(null);
   }, [clearFilters]);
 
-  const handleSelectPlace = useCallback((title: string) => {
-    setSelectedPlaceTitle(title);
-    const isHK = filters.country === '香港';
-    const districtTerm = filters.district === '全部地區' ? (manualArea || '') : filters.district;
-    const specificSearchQuery = `${title}, ${districtTerm}, ${filters.city}, ${isHK ? 'Hong Kong' : filters.country}`.replace(/, ,/g, ',');
-    setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(specificSearchQuery)}&output=embed`);
-  }, [filters, manualArea, setCurrentMapUrl]);
+  const handleSelectPlace = useCallback((place: PlaceResult) => {
+    setSelectedPlace(place);
+  }, []);
+
+  const handleOpenInGoogleMaps = useCallback(() => {
+    if (selectedPlace) {
+      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedPlace.name)}&query_place_id=${selectedPlace.placeId}`;
+      window.open(url, '_blank');
+    }
+  }, [selectedPlace]);
+
+  const handleCloseDetail = useCallback(() => {
+    setSelectedPlace(null);
+  }, []);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden text-gray-900 bg-gray-50 font-sans">
@@ -121,10 +126,10 @@ const App: React.FC = () => {
 
         {error && <ErrorBanner message={error} />}
 
-        {result && showResultsPane && (
+        {places.length > 0 && showResultsPane && (
           <ResultsPane
-            result={result}
-            selectedPlaceTitle={selectedPlaceTitle}
+            places={places}
+            selectedPlaceId={selectedPlace?.placeId || null}
             onSelectPlace={handleSelectPlace}
             onClose={() => setShowResultsPane(false)}
             t={t}
@@ -132,14 +137,26 @@ const App: React.FC = () => {
         )}
 
         <MapView
-          mapUrl={currentMapUrl}
+          places={places}
+          selectedPlaceId={selectedPlace?.placeId || null}
+          onSelectPlace={handleSelectPlace}
+          onMapReady={handleMapReady}
+          center={mapCenter}
           isSidebarOpen={isSidebarOpen}
           onOpenSidebar={() => setIsSidebarOpen(true)}
-          result={result}
           showResultsPane={showResultsPane}
           onShowResults={() => setShowResultsPane(true)}
           t={t}
         />
+
+        {selectedPlace && (
+          <RestaurantDetail
+            place={selectedPlace}
+            onClose={handleCloseDetail}
+            onOpenInMaps={handleOpenInGoogleMaps}
+            t={t}
+          />
+        )}
 
         {loading && <LoadingOverlay message={t.loading} />}
       </div>

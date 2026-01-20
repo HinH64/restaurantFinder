@@ -25,6 +25,22 @@ export interface SearchResult {
   sources: { title: string; url: string }[];
 }
 
+export interface PlaceResult {
+  placeId: string;
+  name: string;
+  address: string;
+  rating?: number;
+  userRatingsTotal?: number;
+  priceLevel?: number;
+  photoUrl?: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  openNow?: boolean;
+  types?: string[];
+}
+
 export const COUNTRIES: LocalizedItem[] = [
   { zh: "香港", en: "Hong Kong" },
   { zh: "日本", en: "Japan" },

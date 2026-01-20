@@ -1,20 +1,91 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 搵食 (Gourmet Finder)
 
-# Run and deploy your AI Studio app
+A restaurant finder app with Google Maps integration and Google Places API for real restaurant data.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Y3Nqk4lcv21w4Px1UlR6fL6lj7jwpyRg
+- **Interactive Map** - Google Maps with clickable markers for each restaurant
+- **Real Restaurant Data** - Ratings, photos, addresses, price levels from Google Places API
+- **Bidirectional Selection** - Click on map markers or list items, both stay in sync
+- **Multi-region Support** - Hong Kong, Japan, United Kingdom
+- **Bilingual** - Traditional Chinese (繁體中文) and English
+- **Filter Options** - By country, city, district, and cuisine type
+- **Restaurant Details** - View selected restaurant info with "Open in Google Maps" option
 
-## Run Locally
+## Prerequisites
 
-**Prerequisites:**  Node.js
+- Node.js
+- Google Maps API Key (with Maps JavaScript API and Places API enabled)
 
+## Setup
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+   ```bash
+   npm install
+   ```
+
+2. Get a Google Maps API Key:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable these APIs:
+     - **Maps JavaScript API**
+     - **Places API**
+   - Create credentials (API Key)
+   - (Optional) Restrict the key to your domain for security
+
+3. Configure API Keys in `.env.local`:
+     ```
+     VITE_GEMINI_API_KEY = "your_gemini_api_key"
+     VITE_GOOGLE_MAPS_API_KEY = "your_google_maps_api_key"
+     ```
+
+4. Run the app:
+   ```bash
+   npm run dev
+   ```
+
+## API Costs
+
+### Google Maps Platform (Free Tier)
+- **$200 free credit per month** (covers most small-medium apps)
+- Maps JavaScript API: ~28,500 free map loads/month
+- Places API: ~5,000 free text searches/month
+
+You need to enable billing on Google Cloud, but you won't be charged unless you exceed the free tier.
+
+## Tech Stack
+
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Google Maps JavaScript API
+- Google Places API
+
+## Project Structure
+
+```
+├── App.tsx                 # Main app component
+├── index.html              # HTML entry with Google Maps loader
+├── types.ts                # TypeScript types and data constants
+├── components/
+│   ├── Header.tsx          # App header with search and language toggle
+│   ├── Sidebar.tsx         # Filter sidebar
+│   ├── FilterSection.tsx   # Reusable filter component
+│   ├── MapView.tsx         # Google Maps with markers
+│   ├── ResultsPane.tsx     # Search results list
+│   ├── RestaurantDetail.tsx # Selected restaurant detail panel
+│   └── ...
+├── services/
+│   ├── placesService.ts    # Google Places API service
+│   └── geminiService.ts    # Gemini AI service (legacy)
+├── hooks/
+│   ├── useFilters.ts       # Filter state management
+│   └── useGeolocation.ts   # Browser geolocation
+└── constants/
+    └── uiStrings.ts        # Bilingual UI strings
+```
+
+## License
+
+MIT

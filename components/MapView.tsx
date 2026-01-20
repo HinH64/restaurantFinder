@@ -1,42 +1,202 @@
-import React from 'react';
-import { SearchResult } from '../types';
+import React, { useEffect, useRef, useState } from 'react';
+import { PlaceResult } from '../types';
 import { UIStrings } from '../constants/uiStrings';
 import { MenuIcon, ListIcon } from './icons';
+import { loadGoogleMapsAPI } from '../utils/loadGoogleMaps';
 
 interface MapViewProps {
-  mapUrl: string;
+  places: PlaceResult[];
+  selectedPlaceId: string | null;
+  onSelectPlace: (place: PlaceResult) => void;
+  onMapReady: (map: google.maps.Map) => void;
+  center: { lat: number; lng: number };
   isSidebarOpen: boolean;
   onOpenSidebar: () => void;
-  result: SearchResult | null;
   showResultsPane: boolean;
   onShowResults: () => void;
   t: UIStrings;
 }
 
 const MapView: React.FC<MapViewProps> = ({
-  mapUrl,
+  places,
+  selectedPlaceId,
+  onSelectPlace,
+  onMapReady,
+  center,
   isSidebarOpen,
   onOpenSidebar,
-  result,
   showResultsPane,
   onShowResults,
   t
 }) => {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
+  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
+
+  // Initialize map
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    const initMap = async () => {
+      try {
+        // Load Google Maps API first
+        await loadGoogleMapsAPI();
+
+        const { Map } = await google.maps.importLibrary('maps') as google.maps.MapsLibrary;
+
+        const map = new Map(mapRef.current!, {
+          center,
+          zoom: 14,
+          mapId: 'restaurant-finder-map',
+          disableDefaultUI: false,
+          zoomControl: true,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true
+        });
+
+        mapInstanceRef.current = map;
+        infoWindowRef.current = new google.maps.InfoWindow();
+        onMapReady(map);
+      } catch (error: any) {
+        setMapError(error.message || 'Failed to load Google Maps');
+      }
+    };
+
+    initMap();
+  }, []);
+
+  // Update center when it changes
+  useEffect(() => {
+    if (mapInstanceRef.current && center) {
+      mapInstanceRef.current.panTo(center);
+    }
+  }, [center]);
+
+  // Update markers when places change
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    const updateMarkers = async () => {
+      // Clear existing markers
+      markersRef.current.forEach(marker => {
+        marker.map = null;
+      });
+      markersRef.current = [];
+
+      if (places.length === 0) return;
+
+      const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary('marker') as google.maps.MarkerLibrary;
+
+      const bounds = new google.maps.LatLngBounds();
+
+      places.forEach((place) => {
+        const isSelected = place.placeId === selectedPlaceId;
+
+        const pin = new PinElement({
+          background: isSelected ? '#f97316' : '#ea580c',
+          borderColor: isSelected ? '#c2410c' : '#9a3412',
+          glyphColor: 'white',
+          scale: isSelected ? 1.3 : 1
+        });
+
+        const marker = new AdvancedMarkerElement({
+          map: mapInstanceRef.current,
+          position: place.location,
+          title: place.name,
+          content: pin.element
+        });
+
+        marker.addListener('click', () => {
+          onSelectPlace(place);
+
+          // Show info window
+          if (infoWindowRef.current) {
+            const content = `
+              <div style="padding: 8px; max-width: 250px;">
+                <h3 style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">${place.name}</h3>
+                ${place.rating ? `<div style="color: #f97316; font-size: 12px;">★ ${place.rating} (${place.userRatingsTotal || 0})</div>` : ''}
+                <p style="color: #666; font-size: 12px; margin-top: 4px;">${place.address}</p>
+              </div>
+            `;
+            infoWindowRef.current.setContent(content);
+            infoWindowRef.current.open(mapInstanceRef.current, marker);
+          }
+        });
+
+        markersRef.current.push(marker);
+        bounds.extend(place.location);
+      });
+
+      // Fit map to show all markers
+      if (places.length > 1) {
+        mapInstanceRef.current!.fitBounds(bounds, { padding: 50 });
+      } else if (places.length === 1) {
+        mapInstanceRef.current!.setCenter(places[0].location);
+        mapInstanceRef.current!.setZoom(16);
+      }
+    };
+
+    updateMarkers();
+  }, [places, selectedPlaceId, onSelectPlace]);
+
+  // Update marker styles when selection changes
+  useEffect(() => {
+    if (!mapInstanceRef.current || markersRef.current.length === 0) return;
+
+    const updateMarkerStyles = async () => {
+      const { PinElement } = await google.maps.importLibrary('marker') as google.maps.MarkerLibrary;
+
+      markersRef.current.forEach((marker, index) => {
+        const place = places[index];
+        if (!place) return;
+
+        const isSelected = place.placeId === selectedPlaceId;
+
+        const pin = new PinElement({
+          background: isSelected ? '#f97316' : '#ea580c',
+          borderColor: isSelected ? '#c2410c' : '#9a3412',
+          glyphColor: 'white',
+          scale: isSelected ? 1.3 : 1
+        });
+
+        marker.content = pin.element;
+      });
+
+      // Center on selected place
+      if (selectedPlaceId) {
+        const selectedPlace = places.find(p => p.placeId === selectedPlaceId);
+        if (selectedPlace && mapInstanceRef.current) {
+          mapInstanceRef.current.panTo(selectedPlace.location);
+        }
+      }
+    };
+
+    updateMarkerStyles();
+  }, [selectedPlaceId, places]);
+
   return (
     <main className="flex-1 relative flex flex-col overflow-hidden bg-gray-100">
       <div className="flex-1 relative h-full">
-        <iframe
-          key={mapUrl}
-          title="Google Maps"
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          style={{ border: 0 }}
-          src={mapUrl}
-          allowFullScreen
-          loading="lazy"
-          className="transition-all duration-700"
-        />
+        {mapError ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-50">
+            <div className="text-center p-8 max-w-md">
+              <div className="text-6xl mb-4">🗺️</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Map Loading Error</h3>
+              <p className="text-sm text-gray-600 mb-4">{mapError}</p>
+              <p className="text-xs text-gray-400">
+                Please check that VITE_GOOGLE_MAPS_API_KEY is set in .env.local
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div
+            ref={mapRef}
+            className="w-full h-full"
+          />
+        )}
 
         <div className="absolute top-6 left-6 flex gap-3 z-20">
           {!isSidebarOpen && (
@@ -47,7 +207,7 @@ const MapView: React.FC<MapViewProps> = ({
               <MenuIcon />
             </button>
           )}
-          {result && !showResultsPane && (
+          {places.length > 0 && !showResultsPane && (
             <button
               onClick={onShowResults}
               className="px-6 py-3 bg-white rounded-2xl shadow-2xl border-2 border-white text-gray-900 font-black text-sm hover:text-orange-500 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
