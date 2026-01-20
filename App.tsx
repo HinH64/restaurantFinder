@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Language, PlaceResult } from './types';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Language, Theme, PlaceResult } from './types';
 import { UI_STRINGS } from './constants/uiStrings';
 import { useFilters } from './hooks/useFilters';
 import { searchPlaces, initPlacesService, getCityCoordinates } from './services/placesService';
@@ -13,7 +13,25 @@ import RestaurantDetail from './components/RestaurantDetail';
 
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('zh');
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme') as Theme;
+      if (saved) return saved;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Apply theme to document
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   // Search state
   const [query, setQuery] = useState('');
@@ -98,10 +116,12 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden text-gray-900 bg-gray-50 font-sans">
+    <div className="h-screen flex flex-col overflow-hidden text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 font-sans">
       <Header
         lang={lang}
         setLang={setLang}
+        theme={theme}
+        setTheme={setTheme}
         query={query}
         setQuery={setQuery}
         onSearch={handleSearch}

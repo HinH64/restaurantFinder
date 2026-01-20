@@ -1,5 +1,6 @@
 
 export type Language = 'zh' | 'en';
+export type Theme = 'light' | 'dark';
 
 export interface FilterState {
   country: string;

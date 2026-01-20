@@ -178,14 +178,14 @@ const MapView: React.FC<MapViewProps> = ({
   }, [selectedPlaceId, places]);
 
   return (
-    <main className="flex-1 relative flex flex-col overflow-hidden bg-gray-100">
+    <main className="flex-1 relative flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       <div className="flex-1 relative h-full">
         {mapError ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50">
+          <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
             <div className="text-center p-8 max-w-md">
               <div className="text-6xl mb-4">🗺️</div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Map Loading Error</h3>
-              <p className="text-sm text-gray-600 mb-4">{mapError}</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Map Loading Error</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{mapError}</p>
               <p className="text-xs text-gray-400">
                 Please check that VITE_GOOGLE_MAPS_API_KEY is set in .env.local
               </p>
@@ -202,7 +202,7 @@ const MapView: React.FC<MapViewProps> = ({
           {!isSidebarOpen && (
             <button
               onClick={onOpenSidebar}
-              className="p-3.5 bg-white rounded-2xl shadow-2xl border-2 border-white text-orange-500 hover:scale-110 active:scale-95 transition-all"
+              className="p-3.5 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-white dark:border-gray-700 text-orange-500 hover:scale-110 active:scale-95 transition-all"
             >
               <MenuIcon />
             </button>
@@ -210,7 +210,7 @@ const MapView: React.FC<MapViewProps> = ({
           {places.length > 0 && !showResultsPane && (
             <button
               onClick={onShowResults}
-              className="px-6 py-3 bg-white rounded-2xl shadow-2xl border-2 border-white text-gray-900 font-black text-sm hover:text-orange-500 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+              className="px-6 py-3 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-white dark:border-gray-700 text-gray-900 dark:text-white font-black text-sm hover:text-orange-500 dark:hover:text-orange-400 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
             >
               <ListIcon />
               {t.mapResults}

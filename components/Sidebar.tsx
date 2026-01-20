@@ -49,18 +49,18 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`absolute lg:relative inset-y-0 left-0 z-40 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out shadow-xl lg:shadow-none flex flex-col shrink-0 ${
+      className={`absolute lg:relative inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out shadow-xl lg:shadow-none flex flex-col shrink-0 ${
         isOpen
           ? 'w-full sm:w-80 translate-x-0'
           : 'w-0 -translate-x-full lg:w-0 overflow-hidden'
       }`}
     >
-      <div className="p-5 border-b border-gray-100 bg-white shrink-0 z-10 shadow-sm">
+      <div className="p-5 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shrink-0 z-10 shadow-sm">
         <div className="flex items-center justify-between mb-5 lg:hidden">
-          <h2 className="font-black text-lg text-gray-900">{t.filters}</h2>
+          <h2 className="font-black text-lg text-gray-900 dark:text-white">{t.filters}</h2>
           <button
             onClick={onClose}
-            className="p-2.5 text-gray-400 hover:text-gray-900 bg-gray-50 rounded-full transition-all"
+            className="p-2.5 text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-50 dark:bg-gray-700 rounded-full transition-all"
           >
             <CloseIcon />
           </button>
@@ -78,14 +78,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
           <button
             onClick={onClear}
-            className="w-full bg-gray-50 text-gray-600 font-bold py-2.5 rounded-xl hover:bg-gray-100 transition-all active:scale-95 text-xs border border-gray-200"
+            className="w-full bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all active:scale-95 text-xs border border-gray-200 dark:border-gray-600"
           >
             {t.clear}
           </button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 custom-scrollbar bg-white">
+      <div className="flex-1 overflow-y-auto p-5 custom-scrollbar bg-white dark:bg-gray-800">
         <FilterSection
           label={lang === 'zh' ? '國家' : 'Country'}
           options={COUNTRIES.map(getLabel)}
@@ -94,9 +94,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           icon={<GlobeIcon />}
         />
 
-        <div className="my-8 py-6 bg-orange-50/70 rounded-3xl border-2 border-orange-100 p-5 shadow-sm">
+        <div className="my-8 py-6 bg-orange-50/70 dark:bg-orange-900/20 rounded-3xl border-2 border-orange-100 dark:border-orange-800 p-5 shadow-sm">
           <div className="mb-6">
-            <div className="flex items-center gap-2.5 mb-3 text-gray-900 font-black">
+            <div className="flex items-center gap-2.5 mb-3 text-gray-900 dark:text-white font-black">
               <PencilIcon />
               <span className="text-sm tracking-tight">{t.manualAreaLabel}</span>
             </div>
@@ -105,18 +105,18 @@ const Sidebar: React.FC<SidebarProps> = ({
               placeholder={t.manualAreaPlaceholder}
               value={manualArea}
               onChange={(e) => onManualAreaChange(e.target.value)}
-              className={`w-full px-5 py-4 text-sm rounded-2xl border-2 transition-all outline-none bg-white text-gray-900 font-bold shadow-sm
-                ${manualArea.trim() ? 'border-orange-500 ring-4 ring-orange-500/10' : 'border-white focus:border-orange-400'}
-                placeholder:text-gray-500 placeholder:font-medium
+              className={`w-full px-5 py-4 text-sm rounded-2xl border-2 transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-bold shadow-sm
+                ${manualArea.trim() ? 'border-orange-500 ring-4 ring-orange-500/10' : 'border-white dark:border-gray-600 focus:border-orange-400'}
+                placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:font-medium
               `}
             />
           </div>
           <div className="flex items-center gap-4 my-8">
-            <div className="flex-1 h-0.5 bg-orange-100/50"></div>
-            <span className="text-[11px] font-black text-orange-300 uppercase tracking-[0.2em]">
+            <div className="flex-1 h-0.5 bg-orange-100/50 dark:bg-orange-800/50"></div>
+            <span className="text-[11px] font-black text-orange-300 dark:text-orange-500 uppercase tracking-[0.2em]">
               {t.orDivider}
             </span>
-            <div className="flex-1 h-0.5 bg-orange-100/50"></div>
+            <div className="flex-1 h-0.5 bg-orange-100/50 dark:bg-orange-800/50"></div>
           </div>
           <div
             className={`${

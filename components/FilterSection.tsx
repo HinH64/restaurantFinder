@@ -24,7 +24,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   return (
     <div className="mb-6">
-      <div className="flex items-center gap-2 mb-2 text-gray-700 font-bold">
+      <div className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 font-bold">
         {icon}
         <span className="text-sm">{label}</span>
       </div>
@@ -34,19 +34,19 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             key={opt}
             onClick={() => onChange(opt)}
             className={`text-[12px] py-2 px-3 rounded-lg transition-all border text-left truncate leading-tight h-10
-              ${value === opt 
-                ? 'bg-orange-500 text-white border-orange-500 shadow-sm font-bold' 
-                : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300'}`}
+              ${value === opt
+                ? 'bg-orange-500 text-white border-orange-500 shadow-sm font-bold'
+                : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-500'}`}
             title={opt}
           >
             {opt}
           </button>
         ))}
-        
+
         {hasMoreLocal && !isExpanded && (
           <button
             onClick={() => setIsExpanded(true)}
-            className="text-[12px] py-2 px-3 rounded-lg transition-all border border-dashed border-gray-300 bg-gray-50 text-gray-400 hover:border-orange-300 hover:text-orange-600 flex items-center justify-center font-bold h-10"
+            className="text-[12px] py-2 px-3 rounded-lg transition-all border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-400 hover:border-orange-300 dark:hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 flex items-center justify-center font-bold h-10"
           >
             展開 / More
           </button>
@@ -55,7 +55,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         {isExpanded && hasMoreLocal && (
           <button
             onClick={() => setIsExpanded(false)}
-            className="col-span-2 text-[10px] py-1 text-orange-500 font-bold uppercase tracking-wider hover:underline"
+            className="col-span-2 text-[10px] py-1 text-orange-500 dark:text-orange-400 font-bold uppercase tracking-wider hover:underline"
           >
             收起 / Close
           </button>
