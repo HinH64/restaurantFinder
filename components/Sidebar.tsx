@@ -1,9 +1,9 @@
 import React from 'react';
 import { FilterState, Language, LocalizedItem } from '../types';
 import { useLocations } from '../hooks/useLocations';
-import { UIStrings } from '../constants/uiStrings';
+import { UIStrings, RATING_OPTIONS } from '../constants/uiStrings';
 import FilterSection from './FilterSection';
-import { CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon } from './icons';
+import { CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon, StarIcon } from './icons';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -157,6 +157,20 @@ const Sidebar: React.FC<SidebarProps> = ({
           value={getSelectedLabel(cuisines, filters.cuisine)}
           onChange={(v) => onFilterChange('cuisine', v)}
           icon={<FoodIcon />}
+        />
+
+        <FilterSection
+          label={t.ratingLabel}
+          options={RATING_OPTIONS.map(opt => lang === 'zh' ? opt.zh : opt.en)}
+          value={(() => {
+            const found = RATING_OPTIONS.find(opt => opt.value === filters.minRating);
+            return found ? (lang === 'zh' ? found.zh : found.en) : (lang === 'zh' ? '全部' : 'All');
+          })()}
+          onChange={(v) => {
+            const found = RATING_OPTIONS.find(opt => (lang === 'zh' ? opt.zh : opt.en) === v);
+            onFilterChange('minRating', found?.value || '0');
+          }}
+          icon={<StarIcon />}
         />
       </div>
     </aside>

@@ -21,6 +21,7 @@ export interface UIStrings {
   locError: string;
   selectedRestaurant: string;
   openInGoogleMaps: string;
+  ratingLabel: string;
 }
 
 export const UI_STRINGS: Record<Language, UIStrings> = {
@@ -44,7 +45,8 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     districtLabel: "地區",
     locError: "無法獲取您的位置，請檢查權限。",
     selectedRestaurant: "已選擇餐廳",
-    openInGoogleMaps: "喺 Google Maps 開啟"
+    openInGoogleMaps: "喺 Google Maps 開啟",
+    ratingLabel: "最低評分"
   },
   en: {
     title: "Gourmet Finder",
@@ -66,7 +68,8 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     districtLabel: "District",
     locError: "Cannot get your location. Please check permissions.",
     selectedRestaurant: "Selected Restaurant",
-    openInGoogleMaps: "Open in Google Maps"
+    openInGoogleMaps: "Open in Google Maps",
+    ratingLabel: "Min Rating"
   }
 };
 
@@ -74,7 +77,16 @@ export const INITIAL_FILTERS: FilterState = {
   country: '香港',
   city: '香港島',
   district: '全部地區',
-  cuisine: '全部菜式'
+  cuisine: '全部菜式',
+  minRating: '0'
 };
+
+export const RATING_OPTIONS = [
+  { zh: '全部', en: 'All', value: '0' },
+  { zh: '3.0+', en: '3.0+', value: '3' },
+  { zh: '3.5+', en: '3.5+', value: '3.5' },
+  { zh: '4.0+', en: '4.0+', value: '4' },
+  { zh: '4.5+', en: '4.5+', value: '4.5' }
+];
 
 export const DEFAULT_MAP_URL = 'https://www.google.com/maps?q=Hong+Kong+Island&output=embed';

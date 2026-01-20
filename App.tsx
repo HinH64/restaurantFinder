@@ -83,7 +83,12 @@ const App: React.FC = () => {
 
     try {
       const results = await searchPlaces(query, effectiveFilters, lang);
-      setPlaces(results);
+      // Apply rating filter
+      const minRating = parseFloat(filters.minRating) || 0;
+      const filteredResults = minRating > 0
+        ? results.filter(place => (place.rating || 0) >= minRating)
+        : results;
+      setPlaces(filteredResults);
       setShowResultsPane(true);
     } catch (err: any) {
       setError(err.message);

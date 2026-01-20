@@ -7,6 +7,7 @@ export interface FilterState {
   city: string;
   district: string;
   cuisine: string;
+  minRating: string;
 }
 
 export interface LocalizedItem {
