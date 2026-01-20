@@ -42,8 +42,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     return typeof found === 'string' ? found : (lang === 'zh' ? found.zh : found.en);
   };
 
-  const cityOptions = CITIES_MAP[filters.country]?.map(getLabel) || [];
-  const districtOptions = DISTRICTS_MAP[filters.city]?.map(getLabel) || [];
+  const cityList = CITIES_MAP[filters.country] || [];
+  const districtList = DISTRICTS_MAP[filters.city] || [];
+  const cityOptions = cityList.map(getLabel);
+  const districtOptions = districtList.map(getLabel);
 
   return (
     <aside
@@ -124,7 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <FilterSection
               label={t.regionLabel}
               options={cityOptions}
-              value={getSelectedLabel(cityOptions, filters.city)}
+              value={getSelectedLabel(cityList, filters.city)}
               onChange={(v) => onFilterChange('city', v)}
               icon={<CityIcon />}
             />
@@ -132,7 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               key={filters.city}
               label={t.districtLabel}
               options={districtOptions}
-              value={getSelectedLabel(districtOptions, filters.district)}
+              value={getSelectedLabel(districtList, filters.district)}
               onChange={(v) => onFilterChange('district', v)}
               icon={<MapIcon />}
             />
