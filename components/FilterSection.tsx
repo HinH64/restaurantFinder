@@ -1,35 +1,31 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
 interface FilterSectionProps {
   label: string;
   options: string[];
   value: string;
   onChange: (val: string) => void;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
-const FilterSection: React.FC<FilterSectionProps> = ({ 
-  label, 
-  options, 
-  value, 
-  onChange, 
+const FilterSection: React.FC<FilterSectionProps> = ({
+  label,
+  options,
+  value,
+  onChange,
   icon
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const DEFAULT_LIMIT = 4;
-  
-  const hasMoreLocal = options.length > DEFAULT_LIMIT;
-  const visibleOptions = isExpanded ? options : options.slice(0, DEFAULT_LIMIT);
-
   return (
     <div className="mb-6">
-      <div className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 font-bold">
-        {icon}
-        <span className="text-sm">{label}</span>
-      </div>
+      {label && (
+        <div className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 font-bold">
+          {icon}
+          <span className="text-sm">{label}</span>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-2">
-        {visibleOptions.map((opt) => (
+        {options.map((opt) => (
           <button
             key={opt}
             onClick={() => onChange(opt)}
@@ -42,24 +38,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             {opt}
           </button>
         ))}
-
-        {hasMoreLocal && !isExpanded && (
-          <button
-            onClick={() => setIsExpanded(true)}
-            className="text-[12px] py-2 px-3 rounded-lg transition-all border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-400 hover:border-orange-300 dark:hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 flex items-center justify-center font-bold h-10"
-          >
-            展開 / More
-          </button>
-        )}
-
-        {isExpanded && hasMoreLocal && (
-          <button
-            onClick={() => setIsExpanded(false)}
-            className="col-span-2 text-[10px] py-1 text-orange-500 dark:text-orange-400 font-bold uppercase tracking-wider hover:underline"
-          >
-            收起 / Close
-          </button>
-        )}
       </div>
     </div>
   );

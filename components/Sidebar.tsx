@@ -1,8 +1,9 @@
 import React from 'react';
-import { FilterState, Language, COUNTRIES, CITIES_MAP, DISTRICTS_MAP, CUISINES, LocalizedItem } from '../types';
+import { FilterState, Language, LocalizedItem } from '../types';
+import { useLocations } from '../hooks/useLocations';
 import { UIStrings } from '../constants/uiStrings';
 import FilterSection from './FilterSection';
-import { GlobeIcon, CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon } from './icons';
+import { CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon } from './icons';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -31,6 +32,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSearch,
   onClear
 }) => {
+  const { countries, getCitiesByCountry, getDistrictsByCity, cuisines } = useLocations();
+
   const getLabel = (item: LocalizedItem | string) => {
     if (typeof item === 'string') return item;
     return lang === 'zh' ? item.zh : item.en;
@@ -42,10 +45,17 @@ const Sidebar: React.FC<SidebarProps> = ({
     return typeof found === 'string' ? found : (lang === 'zh' ? found.zh : found.en);
   };
 
-  const cityList = CITIES_MAP[filters.country] || [];
-  const districtList = DISTRICTS_MAP[filters.city] || [];
+  const cityList = getCitiesByCountry(filters.country);
+  const districtList = getDistrictsByCity(filters.city);
+
+  // Add "All Districts" option at the beginning
+  const districtListWithAll: LocalizedItem[] = [
+    { zh: '全部地區', en: 'All Districts' },
+    ...districtList
+  ];
+
   const cityOptions = cityList.map(getLabel);
-  const districtOptions = districtList.map(getLabel);
+  const districtOptions = districtListWithAll.map(getLabel);
 
   return (
     <aside
@@ -87,11 +97,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <div className="flex-1 overflow-y-auto p-5 custom-scrollbar bg-white dark:bg-gray-800">
         <FilterSection
-          label={lang === 'zh' ? '國家' : 'Country'}
-          options={COUNTRIES.map(getLabel)}
-          value={getSelectedLabel(COUNTRIES, filters.country)}
+          label={lang === 'zh' ? '' : ''}
+          options={countries.map(getLabel)}
+          value={getSelectedLabel(countries, filters.country)}
           onChange={(v) => onFilterChange('country', v)}
-          icon={<GlobeIcon />}
+
         />
 
         <div className="my-8 py-6 bg-orange-50/70 dark:bg-orange-900/20 rounded-3xl border-2 border-orange-100 dark:border-orange-800 p-5 shadow-sm">
@@ -134,7 +144,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               key={filters.city}
               label={t.districtLabel}
               options={districtOptions}
-              value={getSelectedLabel(districtList, filters.district)}
+              value={getSelectedLabel(districtListWithAll, filters.district)}
               onChange={(v) => onFilterChange('district', v)}
               icon={<MapIcon />}
             />
@@ -143,8 +153,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <FilterSection
           label={lang === 'zh' ? '菜式' : 'Cuisine'}
-          options={CUISINES.map(getLabel)}
-          value={getSelectedLabel(CUISINES, filters.cuisine)}
+          options={cuisines.map(getLabel)}
+          value={getSelectedLabel(cuisines, filters.cuisine)}
           onChange={(v) => onFilterChange('cuisine', v)}
           icon={<FoodIcon />}
         />

@@ -122,9 +122,6 @@ const App: React.FC = () => {
         setLang={setLang}
         theme={theme}
         setTheme={setTheme}
-        query={query}
-        setQuery={setQuery}
-        onSearch={handleSearch}
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         t={t}
       />

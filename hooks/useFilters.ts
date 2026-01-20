@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { FilterState, COUNTRIES, CITIES_MAP, DISTRICTS_MAP } from '../types';
+import { FilterState } from '../types';
+import { useLocations } from './useLocations';
 import { INITIAL_FILTERS, DEFAULT_MAP_URL } from '../constants/uiStrings';
 
 export interface UseFiltersReturn {
@@ -15,6 +16,7 @@ export interface UseFiltersReturn {
 export function useFilters(
   onFilterChange?: () => void
 ): UseFiltersReturn {
+  const { countries, getCitiesByCountry, getDistrictsByCity } = useLocations();
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [manualArea, setManualArea] = useState('');
   const [currentMapUrl, setCurrentMapUrl] = useState(DEFAULT_MAP_URL);
@@ -25,27 +27,31 @@ export function useFilters(
       if (key === 'city' || key === 'district') setManualArea('');
 
       if (key === 'country') {
-        const countryZh = COUNTRIES.find(c => c.zh === val || c.en === val)?.zh || '香港';
+        const country = countries.find(c => c.zh === val || c.en === val);
+        const countryZh = country?.zh || '香港';
         newState.country = countryZh;
-        const firstCity = CITIES_MAP[countryZh][0];
-        newState.city = firstCity.zh;
+        const cities = getCitiesByCountry(countryZh);
+        const firstCity = cities[0];
+        newState.city = firstCity?.zh || '';
         newState.district = '全部地區';
         setManualArea('');
         setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(newState.city + " " + (countryZh === '香港' ? 'Hong Kong' : countryZh))}&output=embed`);
         onFilterChange?.();
       } else if (key === 'city') {
-        const cityZh = (CITIES_MAP[prev.country] || []).find(c => (c.zh === val || c.en === val)) || val;
-        newState.city = typeof cityZh === 'string' ? cityZh : cityZh.zh;
+        const cities = getCitiesByCountry(prev.country);
+        const city = cities.find(c => c.zh === val || c.en === val);
+        newState.city = city?.zh || val;
         newState.district = '全部地區';
         setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(newState.city + " " + (prev.country === '香港' ? 'Hong Kong' : prev.country))}&output=embed`);
         onFilterChange?.();
       } else if (key === 'district') {
-        const districtZh = (DISTRICTS_MAP[prev.city] || []).find(d => (d.zh === val || d.en === val)) || val;
-        newState.district = typeof districtZh === 'string' ? districtZh : districtZh.zh;
+        const districts = getDistrictsByCity(prev.city);
+        const district = districts.find(d => d.zh === val || d.en === val);
+        newState.district = district?.zh || val;
       }
       return newState;
     });
-  }, [onFilterChange]);
+  }, [countries, getCitiesByCountry, getDistrictsByCity, onFilterChange]);
 
   const handleManualAreaChange = useCallback((val: string) => {
     setManualArea(val);

@@ -8,9 +8,6 @@ interface HeaderProps {
   setLang: (lang: Language) => void;
   theme: Theme;
   setTheme: (theme: Theme) => void;
-  query: string;
-  setQuery: (query: string) => void;
-  onSearch: () => void;
   onToggleSidebar: () => void;
   t: UIStrings;
 }
@@ -20,9 +17,6 @@ const Header: React.FC<HeaderProps> = ({
   setLang,
   theme,
   setTheme,
-  query,
-  setQuery,
-  onSearch,
   onToggleSidebar,
   t
 }) => {
@@ -38,23 +32,6 @@ const Header: React.FC<HeaderProps> = ({
             {t.global}
           </span>
         </h1>
-      </div>
-
-      <div className="flex-1 max-w-xl relative hidden md:block">
-        <input
-          type="text"
-          placeholder={t.placeholder}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-5 pr-14 py-2.5 rounded-full border-2 border-gray-100 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all text-sm font-bold placeholder:text-gray-500 dark:placeholder:text-gray-400 shadow-sm"
-          onKeyDown={(e) => e.key === 'Enter' && onSearch()}
-        />
-        <button
-          onClick={onSearch}
-          className="absolute right-1.5 top-1.5 bg-orange-500 text-white px-5 py-1.5 rounded-full hover:bg-orange-600 transition-all text-xs font-black shadow-sm active:scale-95"
-        >
-          {t.search}
-        </button>
       </div>
 
       <div className="flex items-center gap-3">
