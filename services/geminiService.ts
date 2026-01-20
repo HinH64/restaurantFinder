@@ -12,13 +12,15 @@ export const searchRestaurants = async (
 ): Promise<SearchResult> => {
   const model = "gemini-2.5-flash";
   
+  const districtTerm = filters.district === '全部地區' ? '' : filters.district;
+  const locationPrompt = `${filters.country}, ${filters.city} ${districtTerm}`;
+
   const prompt = `
-    Find restaurants in ${filters.city}, ${filters.country}.
-    Area: ${filters.district === '全部地區' ? filters.city : filters.district}
+    Find restaurants in: ${locationPrompt}
     Cuisine: ${filters.cuisine === '全部菜式' ? 'any' : filters.cuisine}
     Keywords: ${query || "recommendations"}
     
-    Return the results using the Google Maps tool.
+    CRITICAL: You must use the Google Maps tool to find real places that exist in the specified area.
   `;
 
   try {

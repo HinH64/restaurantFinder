@@ -31,7 +31,8 @@ const UI_STRINGS = {
     manualAreaPlaceholder: "例如: 啟德, 西九文化區",
     orDivider: "或使用預設地區",
     regionLabel: "區域",
-    districtLabel: "地區"
+    districtLabel: "地區",
+    locError: "無法獲取您的位置，請檢查權限。"
   },
   en: {
     title: "Gourmet Finder",
@@ -50,7 +51,8 @@ const UI_STRINGS = {
     manualAreaPlaceholder: "e.g. Kai Tak, West Kowloon",
     orDivider: "OR select from list",
     regionLabel: "Region",
-    districtLabel: "District"
+    districtLabel: "District",
+    locError: "Cannot get your location. Please check permissions."
   }
 };
 
@@ -105,6 +107,7 @@ const App: React.FC = () => {
       setShowResultsPane(true);
 
       const isHK = filters.country === '香港';
+      
       const districtTerm = effectiveFilters.district === '全部地區' ? '' : effectiveFilters.district;
       const mapQuery = [
         query,
@@ -114,7 +117,7 @@ const App: React.FC = () => {
         isHK ? 'Hong Kong' : filters.country,
         'restaurant'
       ].filter(Boolean).join(' ');
-
+      
       setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`);
     } catch (err: any) {
       setError(err.message);
@@ -219,7 +222,7 @@ const App: React.FC = () => {
             className="w-full pl-5 pr-14 py-2.5 rounded-full border-2 border-gray-100 bg-white text-gray-900 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all text-sm font-bold placeholder:text-gray-500 shadow-sm"
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           />
-          <button onClick={handleSearch} className="absolute right-1.5 top-1.5 bg-orange-500 text-white px-5 py-1.5 rounded-full hover:bg-orange-600 transition-all text-xs font-black shadow-sm active:scale-95">
+          <button onClick={() => handleSearch()} className="absolute right-1.5 top-1.5 bg-orange-500 text-white px-5 py-1.5 rounded-full hover:bg-orange-600 transition-all text-xs font-black shadow-sm active:scale-95">
             {t.search}
           </button>
         </div>
@@ -246,7 +249,7 @@ const App: React.FC = () => {
               </button>
             </div>
             <div className="flex flex-col gap-3">
-              <button onClick={handleSearch} disabled={loading} className="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70 shadow-lg shadow-orange-500/20">
+              <button onClick={() => handleSearch()} disabled={loading} className="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70 shadow-lg shadow-orange-500/20">
                 <span className="text-sm tracking-wide">{t.apply}</span>
                 {loading && <div className="animate-spin rounded-full h-5 w-5 border-3 border-white border-t-transparent"></div>}
               </button>
@@ -288,6 +291,13 @@ const App: React.FC = () => {
             <FilterSection label={lang === 'zh' ? '菜式' : 'Cuisine'} options={CUISINES.map(getLabel)} value={getSelectedLabel(CUISINES, filters.cuisine)} onChange={(v) => handleFilterChange('cuisine', v)} icon={<FoodIcon />} />
           </div>
         </aside>
+
+        {error && (
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 bg-red-100 border border-red-400 text-red-700 px-6 py-3 rounded-xl shadow-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                <span className="text-sm font-bold">{error}</span>
+            </div>
+        )}
 
         {result && showResultsPane && (
           <div className="w-full sm:w-80 bg-white border-r border-gray-200 flex flex-col shrink-0 z-30 overflow-hidden animate-in slide-in-from-left duration-300 shadow-2xl">
@@ -335,6 +345,7 @@ const App: React.FC = () => {
               loading="lazy"
               className="transition-all duration-700"
             ></iframe>
+
             <div className="absolute top-6 left-6 flex gap-3 z-20">
               {!isSidebarOpen && (
                 <button onClick={() => setIsSidebarOpen(true)} className="p-3.5 bg-white rounded-2xl shadow-2xl border-2 border-white text-orange-500 hover:scale-110 active:scale-95 transition-all">
