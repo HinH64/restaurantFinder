@@ -1,4 +1,4 @@
-import { FilterState, PlaceResult, Language, CUISINES } from '../types';
+import { FilterState, PlaceResult, Language } from '../types';
 
 // Location coordinates for cities
 const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
