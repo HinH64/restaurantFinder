@@ -74,10 +74,10 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
 };
 
 export const INITIAL_FILTERS: FilterState = {
-  country: '香港',
-  city: '香港島',
-  district: '全部地區',
-  cuisine: '全部菜式',
+  country: 'Hong Kong',
+  city: 'Hong Kong Island',
+  district: 'All Districts',
+  cuisine: 'All Cuisines',
   minRating: '0'
 };
 

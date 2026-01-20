@@ -34,28 +34,22 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { countries, getCitiesByCountry, getDistrictsByCity, cuisines } = useSideBar();
 
-  const getLabel = (item: LocalizedItem | string) => {
-    if (typeof item === 'string') return item;
-    return lang === 'zh' ? item.zh : item.en;
-  };
-
-  const getSelectedLabel = (list: (LocalizedItem | string)[], key: string) => {
-    const found = list.find(i => (typeof i === 'string' ? i === key : (i.zh === key || i.en === key)));
-    if (!found) return key;
-    return typeof found === 'string' ? found : (lang === 'zh' ? found.zh : found.en);
-  };
+  // Convert LocalizedItem to { label, value } where label is localized and value is always English
+  const toOption = (item: LocalizedItem) => ({
+    label: lang === 'zh' ? item.zh : item.en,
+    value: item.en
+  });
 
   const cityList = getCitiesByCountry(filters.country);
   const districtList = getDistrictsByCity(filters.city);
 
   // Add "All Districts" option at the beginning
-  const districtListWithAll: LocalizedItem[] = [
-    { zh: '全部地區', en: 'All Districts' },
-    ...districtList
-  ];
+  const allDistrictsOption = { label: lang === 'zh' ? '全部地區' : 'All Districts', value: 'All Districts' };
 
-  const cityOptions = cityList.map(getLabel);
-  const districtOptions = districtListWithAll.map(getLabel);
+  const countryOptions = countries.map(toOption);
+  const cityOptions = cityList.map(toOption);
+  const districtOptions = [allDistrictsOption, ...districtList.map(toOption)];
+  const cuisineOptions = cuisines.map(toOption);
 
   return (
     <aside
@@ -97,11 +91,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <div className="flex-1 overflow-y-auto p-5 custom-scrollbar bg-white dark:bg-gray-800">
         <FilterSection
-          label={lang === 'zh' ? '' : ''}
-          options={countries.map(getLabel)}
-          value={getSelectedLabel(countries, filters.country)}
+          label=""
+          options={countryOptions}
+          value={filters.country}
           onChange={(v) => onFilterChange('country', v)}
-
         />
 
         <div className="my-8 py-6 bg-orange-50/70 dark:bg-orange-900/20 rounded-3xl border-2 border-orange-100 dark:border-orange-800 p-5 shadow-sm">
@@ -136,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <FilterSection
               label={t.regionLabel}
               options={cityOptions}
-              value={getSelectedLabel(cityList, filters.city)}
+              value={filters.city}
               onChange={(v) => onFilterChange('city', v)}
               icon={<CityIcon />}
             />
@@ -144,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               key={filters.city}
               label={t.districtLabel}
               options={districtOptions}
-              value={getSelectedLabel(districtListWithAll, filters.district)}
+              value={filters.district}
               onChange={(v) => onFilterChange('district', v)}
               icon={<MapIcon />}
             />
@@ -153,23 +146,17 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <FilterSection
           label={lang === 'zh' ? '菜式' : 'Cuisine'}
-          options={cuisines.map(getLabel)}
-          value={getSelectedLabel(cuisines, filters.cuisine)}
+          options={cuisineOptions}
+          value={filters.cuisine}
           onChange={(v) => onFilterChange('cuisine', v)}
           icon={<FoodIcon />}
         />
 
         <FilterSection
           label={t.ratingLabel}
-          options={RATING_OPTIONS.map(opt => lang === 'zh' ? opt.zh : opt.en)}
-          value={(() => {
-            const found = RATING_OPTIONS.find(opt => opt.value === filters.minRating);
-            return found ? (lang === 'zh' ? found.zh : found.en) : (lang === 'zh' ? '全部' : 'All');
-          })()}
-          onChange={(v) => {
-            const found = RATING_OPTIONS.find(opt => (lang === 'zh' ? opt.zh : opt.en) === v);
-            onFilterChange('minRating', found?.value || '0');
-          }}
+          options={RATING_OPTIONS.map(opt => ({ label: lang === 'zh' ? opt.zh : opt.en, value: opt.value }))}
+          value={filters.minRating}
+          onChange={(v) => onFilterChange('minRating', v)}
           icon={<StarIcon />}
         />
       </div>

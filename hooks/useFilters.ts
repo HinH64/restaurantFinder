@@ -16,47 +16,38 @@ export interface UseFiltersReturn {
 export function useFilters(
   onFilterChange?: () => void
 ): UseFiltersReturn {
-  const { countries, getCitiesByCountry, getDistrictsByCity } = useSideBar();
+  const { getCitiesByCountry } = useSideBar();
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [manualArea, setManualArea] = useState('');
   const [currentMapUrl, setCurrentMapUrl] = useState(DEFAULT_MAP_URL);
 
+  // Values are always in English (passed from Sidebar)
   const handleFilterChange = useCallback((key: keyof FilterState, val: string) => {
     setFilters(prev => {
       const newState = { ...prev, [key]: val };
       if (key === 'city' || key === 'district') setManualArea('');
 
       if (key === 'country') {
-        const country = countries.find(c => c.zh === val || c.en === val);
-        const countryZh = country?.zh || '香港';
-        newState.country = countryZh;
-        const cities = getCitiesByCountry(countryZh);
+        const cities = getCitiesByCountry(val);
         const firstCity = cities[0];
-        newState.city = firstCity?.zh || '';
-        newState.district = '全部地區';
+        newState.city = firstCity?.en || '';
+        newState.district = 'All Districts';
         setManualArea('');
-        setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(newState.city + " " + (countryZh === '香港' ? 'Hong Kong' : countryZh))}&output=embed`);
+        setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(newState.city + " " + val)}&output=embed`);
         onFilterChange?.();
       } else if (key === 'city') {
-        const cities = getCitiesByCountry(prev.country);
-        const city = cities.find(c => c.zh === val || c.en === val);
-        newState.city = city?.zh || val;
-        newState.district = '全部地區';
-        setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(newState.city + " " + (prev.country === '香港' ? 'Hong Kong' : prev.country))}&output=embed`);
+        newState.district = 'All Districts';
+        setCurrentMapUrl(`https://www.google.com/maps?q=${encodeURIComponent(val + " " + prev.country)}&output=embed`);
         onFilterChange?.();
-      } else if (key === 'district') {
-        const districts = getDistrictsByCity(prev.city);
-        const district = districts.find(d => d.zh === val || d.en === val);
-        newState.district = district?.zh || val;
       }
       return newState;
     });
-  }, [countries, getCitiesByCountry, getDistrictsByCity, onFilterChange]);
+  }, [getCitiesByCountry, onFilterChange]);
 
   const handleManualAreaChange = useCallback((val: string) => {
     setManualArea(val);
     if (val.trim()) {
-      setFilters(prev => ({ ...prev, district: '全部地區' }));
+      setFilters(prev => ({ ...prev, district: 'All Districts' }));
     }
   }, []);
 

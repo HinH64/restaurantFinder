@@ -1,39 +1,39 @@
 import { FilterState, PlaceResult, Language } from '../types';
 
-// Location coordinates for cities
+// Location coordinates for cities (using English keys)
 const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
-  '香港島': { lat: 22.2783, lng: 114.1747 },
-  '九龍': { lat: 22.3193, lng: 114.1694 },
-  '新界': { lat: 22.4445, lng: 114.0227 },
-  '離島': { lat: 22.2614, lng: 113.9456 },
-  '東京': { lat: 35.6762, lng: 139.6503 },
-  '大阪': { lat: 34.6937, lng: 135.5023 },
-  '京都': { lat: 35.0116, lng: 135.7681 },
-  '福岡': { lat: 33.5904, lng: 130.4017 },
-  '北海道': { lat: 43.0642, lng: 141.3469 },
-  '倫敦': { lat: 51.5074, lng: -0.1278 },
-  '曼徹斯特': { lat: 53.4808, lng: -2.2426 },
-  '愛丁堡': { lat: 55.9533, lng: -3.1883 },
-  '伯明翰': { lat: 52.4862, lng: -1.8904 }
+  'Hong Kong Island': { lat: 22.2783, lng: 114.1747 },
+  'Kowloon': { lat: 22.3193, lng: 114.1694 },
+  'New Territories': { lat: 22.4445, lng: 114.0227 },
+  'Outlying Islands': { lat: 22.2614, lng: 113.9456 },
+  'Tokyo': { lat: 35.6762, lng: 139.6503 },
+  'Osaka': { lat: 34.6937, lng: 135.5023 },
+  'Kyoto': { lat: 35.0116, lng: 135.7681 },
+  'Fukuoka': { lat: 33.5904, lng: 130.4017 },
+  'Hokkaido': { lat: 43.0642, lng: 141.3469 },
+  'London': { lat: 51.5074, lng: -0.1278 },
+  'Manchester': { lat: 53.4808, lng: -2.2426 },
+  'Edinburgh': { lat: 55.9533, lng: -3.1883 },
+  'Birmingham': { lat: 52.4862, lng: -1.8904 }
 };
 
-// Cuisine type mapping for Google Places
+// Cuisine type mapping for Google Places (using English keys)
 const CUISINE_KEYWORDS: Record<string, string> = {
-  '全部菜式': 'restaurant',
-  '港式': 'hong kong style restaurant',
-  '日本菜': 'japanese restaurant',
-  '泰國菜': 'thai restaurant',
-  '韓國菜': 'korean restaurant',
-  '西餐': 'western restaurant',
-  '意大利菜': 'italian restaurant',
-  '台灣菜': 'taiwanese restaurant',
-  '火鍋': 'hot pot restaurant',
-  '甜品': 'dessert cafe',
-  '茶餐廳': 'cha chaan teng',
-  '四川菜': 'sichuan restaurant',
-  '順德菜': 'cantonese restaurant',
-  '星馬菜': 'malaysian singaporean restaurant',
-  '法國菜': 'french restaurant'
+  'All Cuisines': 'restaurant',
+  'Hong Kong Style': 'hong kong style restaurant',
+  'Japanese': 'japanese restaurant',
+  'Thai': 'thai restaurant',
+  'Korean': 'korean restaurant',
+  'Western': 'western restaurant',
+  'Italian': 'italian restaurant',
+  'Taiwanese': 'taiwanese restaurant',
+  'Hot Pot': 'hot pot restaurant',
+  'Dessert': 'dessert cafe',
+  'Cha Chaan Teng': 'cha chaan teng',
+  'Sichuan': 'sichuan restaurant',
+  'Shunde': 'cantonese restaurant',
+  'Singaporean/Malaysian': 'malaysian singaporean restaurant',
+  'French': 'french restaurant'
 };
 
 let placesService: google.maps.places.PlacesService | null = null;
@@ -47,7 +47,7 @@ export const initPlacesService = (map: google.maps.Map) => {
 export const getPlacesService = () => placesService;
 
 export const getCityCoordinates = (city: string): { lat: number; lng: number } => {
-  return CITY_COORDINATES[city] || CITY_COORDINATES['香港島'];
+  return CITY_COORDINATES[city] || CITY_COORDINATES['Hong Kong Island'];
 };
 
 export const searchPlaces = async (
@@ -62,7 +62,7 @@ export const searchPlaces = async (
   const cityCoords = getCityCoordinates(filters.city);
   const cuisineKeyword = CUISINE_KEYWORDS[filters.cuisine] || 'restaurant';
 
-  const districtTerm = filters.district === '全部地區' ? '' : filters.district;
+  const districtTerm = filters.district === 'All Districts' ? '' : filters.district;
   const searchQuery = [query, cuisineKeyword, districtTerm, filters.city].filter(Boolean).join(' ');
 
   return new Promise((resolve, reject) => {

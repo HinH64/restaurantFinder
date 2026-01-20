@@ -53,11 +53,11 @@ export function useSearch(
       setResult(data);
       setShowResultsPane(true);
 
-      const isHK = filters.country === '香港';
-      const districtTerm = effectiveFilters.district === '全部地區' ? '' : effectiveFilters.district;
+      const isHK = filters.country === 'Hong Kong';
+      const districtTerm = effectiveFilters.district === 'All Districts' ? '' : effectiveFilters.district;
       const mapQuery = [
         query,
-        filters.cuisine !== '全部菜式' ? filters.cuisine : '',
+        filters.cuisine !== 'All Cuisines' ? filters.cuisine : '',
         districtTerm,
         filters.city,
         isHK ? 'Hong Kong' : filters.country,
@@ -79,8 +79,8 @@ export function useSearch(
     manualArea: string
   ): string => {
     setSelectedPlaceTitle(title);
-    const isHK = filters.country === '香港';
-    const districtTerm = filters.district === '全部地區' ? (manualArea || '') : filters.district;
+    const isHK = filters.country === 'Hong Kong';
+    const districtTerm = filters.district === 'All Districts' ? (manualArea || '') : filters.district;
     const specificSearchQuery = `${title}, ${districtTerm}, ${filters.city}, ${isHK ? 'Hong Kong' : filters.country}`.replace(/, ,/g, ',');
     return `https://www.google.com/maps?q=${encodeURIComponent(specificSearchQuery)}&output=embed`;
   }, []);

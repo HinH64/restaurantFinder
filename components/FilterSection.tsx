@@ -1,9 +1,14 @@
 
 import React from 'react';
 
+interface FilterOption {
+  label: string;
+  value: string;
+}
+
 interface FilterSectionProps {
   label: string;
-  options: string[];
+  options: FilterOption[];
   value: string;
   onChange: (val: string) => void;
   icon?: React.ReactNode;
@@ -27,15 +32,15 @@ const FilterSection: React.FC<FilterSectionProps> = ({
       <div className="grid grid-cols-2 gap-2">
         {options.map((opt) => (
           <button
-            key={opt}
-            onClick={() => onChange(opt)}
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
             className={`text-[12px] py-2 px-3 rounded-lg transition-all border text-left truncate leading-tight h-10
-              ${value === opt
+              ${value === opt.value
                 ? 'bg-orange-500 text-white border-orange-500 shadow-sm font-bold'
                 : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-500'}`}
-            title={opt}
+            title={opt.label}
           >
-            {opt}
+            {opt.label}
           </button>
         ))}
       </div>
