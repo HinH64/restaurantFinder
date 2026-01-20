@@ -22,6 +22,18 @@ export interface UIStrings {
   selectedRestaurant: string;
   openInGoogleMaps: string;
   ratingLabel: string;
+  aiSummary: string;
+  aiSummaryLoading: string;
+  aiSummaryError: string;
+  highlights: string;
+  disadvantages: string;
+  popularDishes: string;
+  generateSummary: string;
+  website: string;
+  reserve: string;
+  orderOnline: string;
+  call: string;
+  directions: string;
 }
 
 export const UI_STRINGS: Record<Language, UIStrings> = {
@@ -46,7 +58,19 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     locError: "無法獲取您的位置，請檢查權限。",
     selectedRestaurant: "已選擇餐廳",
     openInGoogleMaps: "喺 Google Maps 開啟",
-    ratingLabel: "最低評分"
+    ratingLabel: "最低評分",
+    aiSummary: "AI 評論摘要",
+    aiSummaryLoading: "AI 正在分析評論...",
+    aiSummaryError: "無法獲取摘要",
+    highlights: "正面評價",
+    disadvantages: "需改善之處",
+    popularDishes: "推薦菜式",
+    generateSummary: "AI 摘要",
+    website: "官方網站",
+    reserve: "訂位",
+    orderOnline: "線上點餐",
+    call: "致電",
+    directions: "路線"
   },
   en: {
     title: "Gourmet Finder",
@@ -69,7 +93,19 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     locError: "Cannot get your location. Please check permissions.",
     selectedRestaurant: "Selected Restaurant",
     openInGoogleMaps: "Open in Google Maps",
-    ratingLabel: "Min Rating"
+    ratingLabel: "Min Rating",
+    aiSummary: "AI Review Summary",
+    aiSummaryLoading: "AI analyzing reviews...",
+    aiSummaryError: "Unable to get summary",
+    highlights: "Positive Reviews",
+    disadvantages: "Areas to Improve",
+    popularDishes: "Popular Dishes",
+    generateSummary: "AI Summary",
+    website: "Website",
+    reserve: "Reserve",
+    orderOnline: "Order Online",
+    call: "Call",
+    directions: "Directions"
   }
 };
 

@@ -22,22 +22,22 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   icon
 }) => {
   return (
-    <div className="mb-6">
+    <div className="mb-4 last:mb-0">
       {label && (
-        <div className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 font-bold">
-          {icon}
-          <span className="text-sm">{label}</span>
+        <div className="flex items-center gap-1.5 mb-2 text-gray-700 dark:text-gray-300">
+          {icon && <span className="text-gray-400 dark:text-gray-500">{icon}</span>}
+          <span className="text-xs font-semibold">{label}</span>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {options.map((opt) => (
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
-            className={`text-[12px] py-2 px-3 rounded-lg transition-all border text-left truncate leading-tight h-10
+            className={`text-[11px] py-1.5 px-2.5 rounded-lg transition-all text-center leading-tight
               ${value === opt.value
-                ? 'bg-orange-500 text-white border-orange-500 shadow-sm font-bold'
-                : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-500'}`}
+                ? 'bg-orange-500 text-white shadow-sm font-semibold'
+                : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20'}`}
             title={opt.label}
           >
             {opt.label}

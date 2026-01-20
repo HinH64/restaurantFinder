@@ -53,78 +53,86 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`absolute lg:relative inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out shadow-xl lg:shadow-none flex flex-col shrink-0 ${
+      className={`absolute lg:relative inset-y-0 left-0 z-40 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out shadow-xl lg:shadow-none flex flex-col shrink-0 ${
         isOpen
-          ? 'w-full sm:w-80 translate-x-0'
+          ? 'w-full sm:w-72 translate-x-0'
           : 'w-0 -translate-x-full lg:w-0 overflow-hidden'
       }`}
     >
-      <div className="p-5 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shrink-0 z-10 shadow-sm">
-        <div className="flex items-center justify-between mb-5 lg:hidden">
-          <h2 className="font-black text-lg text-gray-900 dark:text-white">{t.filters}</h2>
+      {/* Header with action buttons */}
+      <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0">
+        <div className="flex items-center justify-between mb-4 lg:hidden">
+          <h2 className="font-bold text-base text-gray-900 dark:text-white">{t.filters}</h2>
           <button
             onClick={onClose}
-            className="p-2.5 text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-50 dark:bg-gray-700 rounded-full transition-all"
+            className="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
           >
             <CloseIcon />
           </button>
         </div>
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={onSearch}
-            disabled={loading}
-            className="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70 shadow-lg shadow-orange-500/20"
-          >
-            <span className="text-sm tracking-wide">{t.apply}</span>
-            {loading && (
-              <div className="animate-spin rounded-full h-5 w-5 border-3 border-white border-t-transparent"></div>
-            )}
-          </button>
-          <button
-            onClick={onClear}
-            className="w-full bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all active:scale-95 text-xs border border-gray-200 dark:border-gray-600"
-          >
-            {t.clear}
-          </button>
-        </div>
+        <button
+          onClick={onSearch}
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 shadow-lg shadow-orange-500/25"
+        >
+          <span className="text-sm">{t.apply}</span>
+          {loading && (
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+          )}
+        </button>
+        <button
+          onClick={onClear}
+          className="w-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-semibold py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-[0.98] text-xs"
+        >
+          {t.clear}
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 custom-scrollbar bg-white dark:bg-gray-800">
-        <FilterSection
-          label=""
-          options={countryOptions}
-          value={filters.country}
-          onChange={(v) => onFilterChange('country', v)}
-        />
+      {/* Scrollable filter content */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        {/* Country selector - compact */}
+        <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+          <FilterSection
+            label=""
+            options={countryOptions}
+            value={filters.country}
+            onChange={(v) => onFilterChange('country', v)}
+          />
+        </div>
 
-        <div className="my-8 py-6 bg-orange-50/70 dark:bg-orange-900/20 rounded-3xl border-2 border-orange-100 dark:border-orange-800 p-5 shadow-sm">
-          <div className="mb-6">
-            <div className="flex items-center gap-2.5 mb-3 text-gray-900 dark:text-white font-black">
+        {/* Location section */}
+        <div className="p-4 bg-gradient-to-b from-orange-50/80 to-amber-50/50 dark:from-orange-900/20 dark:to-amber-900/10 border-b border-orange-100 dark:border-orange-900/30">
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2 text-gray-900 dark:text-white">
               <PencilIcon />
-              <span className="text-sm tracking-tight">{t.manualAreaLabel}</span>
+              <span className="text-xs font-bold">{t.manualAreaLabel}</span>
             </div>
             <input
               type="text"
               placeholder={t.manualAreaPlaceholder}
               value={manualArea}
               onChange={(e) => onManualAreaChange(e.target.value)}
-              className={`w-full px-5 py-4 text-sm rounded-2xl border-2 transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-bold shadow-sm
-                ${manualArea.trim() ? 'border-orange-500 ring-4 ring-orange-500/10' : 'border-white dark:border-gray-600 focus:border-orange-400'}
-                placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:font-medium
+              className={`w-full px-3 py-2.5 text-sm rounded-lg border transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-medium
+                ${manualArea.trim()
+                  ? 'border-orange-500 ring-2 ring-orange-500/20'
+                  : 'border-gray-200 dark:border-gray-600 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20'}
+                placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:font-normal
               `}
             />
           </div>
-          <div className="flex items-center gap-4 my-8">
-            <div className="flex-1 h-0.5 bg-orange-100/50 dark:bg-orange-800/50"></div>
-            <span className="text-[11px] font-black text-orange-300 dark:text-orange-500 uppercase tracking-[0.2em]">
+
+          <div className="flex items-center gap-3 my-4">
+            <div className="flex-1 h-px bg-orange-200/70 dark:bg-orange-800/50"></div>
+            <span className="text-[10px] font-bold text-orange-400 dark:text-orange-500 uppercase tracking-wider">
               {t.orDivider}
             </span>
-            <div className="flex-1 h-0.5 bg-orange-100/50 dark:bg-orange-800/50"></div>
+            <div className="flex-1 h-px bg-orange-200/70 dark:bg-orange-800/50"></div>
           </div>
+
           <div
-            className={`${
-              manualArea.trim() ? 'opacity-30 grayscale pointer-events-none' : ''
-            } transition-all duration-500 space-y-4`}
+            className={`space-y-3 ${
+              manualArea.trim() ? 'opacity-40 pointer-events-none' : ''
+            } transition-all duration-300`}
           >
             <FilterSection
               label={t.regionLabel}
@@ -144,21 +152,27 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        <FilterSection
-          label={lang === 'zh' ? '菜式' : 'Cuisine'}
-          options={cuisineOptions}
-          value={filters.cuisine}
-          onChange={(v) => onFilterChange('cuisine', v)}
-          icon={<FoodIcon />}
-        />
+        {/* Cuisine section */}
+        <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+          <FilterSection
+            label={lang === 'zh' ? '菜式' : 'Cuisine'}
+            options={cuisineOptions}
+            value={filters.cuisine}
+            onChange={(v) => onFilterChange('cuisine', v)}
+            icon={<FoodIcon />}
+          />
+        </div>
 
-        <FilterSection
-          label={t.ratingLabel}
-          options={RATING_OPTIONS.map(opt => ({ label: lang === 'zh' ? opt.zh : opt.en, value: opt.value }))}
-          value={filters.minRating}
-          onChange={(v) => onFilterChange('minRating', v)}
-          icon={<StarIcon />}
-        />
+        {/* Rating section */}
+        <div className="p-4 bg-white dark:bg-gray-800">
+          <FilterSection
+            label={t.ratingLabel}
+            options={RATING_OPTIONS.map(opt => ({ label: lang === 'zh' ? opt.zh : opt.en, value: opt.value }))}
+            value={filters.minRating}
+            onChange={(v) => onFilterChange('minRating', v)}
+            icon={<StarIcon />}
+          />
+        </div>
       </div>
     </aside>
   );

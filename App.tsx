@@ -2,7 +2,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Language, Theme, PlaceResult } from './types';
 import { UI_STRINGS } from './constants/uiStrings';
 import { useFilters } from './hooks/useFilters';
-import { searchPlaces, initPlacesService, getCityCoordinates } from './services/placesService';
+import { searchPlaces, initPlacesService, getCityCoordinates, getPlaceDetails } from './services/placesService';
+import { summarizeRestaurant, ReviewSummary } from './services/geminiService';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import ResultsPane from './components/ResultsPane';
@@ -41,6 +42,11 @@ const App: React.FC = () => {
   const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
   const [showResultsPane, setShowResultsPane] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+
+  // AI Summary state
+  const [aiSummary, setAiSummary] = useState<ReviewSummary | null>(null);
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
+  const [aiSummaryError, setAiSummaryError] = useState<string | null>(null);
 
   const handleClearResults = useCallback(() => {
     setPlaces([]);
@@ -105,19 +111,49 @@ const App: React.FC = () => {
     setSelectedPlace(null);
   }, [clearFilters]);
 
-  const handleSelectPlace = useCallback((place: PlaceResult) => {
+  const handleSelectPlace = useCallback(async (place: PlaceResult) => {
+    // Set initial place data immediately for fast UI response
     setSelectedPlace(place);
-  }, []);
+    // Reset AI summary when selecting a new place
+    setAiSummary(null);
+    setAiSummaryError(null);
 
-  const handleOpenInGoogleMaps = useCallback(() => {
-    if (selectedPlace) {
-      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedPlace.name)}&query_place_id=${selectedPlace.placeId}`;
-      window.open(url, '_blank');
+    // Fetch full place details (website, phone, etc.) in the background
+    try {
+      const details = await getPlaceDetails(place.placeId, lang);
+      if (details) {
+        setSelectedPlace(details);
+      }
+    } catch (err) {
+      // Silently fail - we still have the basic place info
+      console.error('Failed to fetch place details:', err);
     }
-  }, [selectedPlace]);
+  }, [lang]);
+
+  const handleGenerateSummary = useCallback(async () => {
+    if (!selectedPlace) return;
+
+    setAiSummaryLoading(true);
+    setAiSummaryError(null);
+
+    try {
+      const summary = await summarizeRestaurant(
+        selectedPlace.name,
+        selectedPlace.address,
+        lang
+      );
+      setAiSummary(summary);
+    } catch (err: any) {
+      setAiSummaryError(err.message);
+    } finally {
+      setAiSummaryLoading(false);
+    }
+  }, [selectedPlace, lang]);
 
   const handleCloseDetail = useCallback(() => {
     setSelectedPlace(null);
+    setAiSummary(null);
+    setAiSummaryError(null);
   }, []);
 
   return (
@@ -175,8 +211,11 @@ const App: React.FC = () => {
           <RestaurantDetail
             place={selectedPlace}
             onClose={handleCloseDetail}
-            onOpenInMaps={handleOpenInGoogleMaps}
             t={t}
+            aiSummary={aiSummary}
+            aiSummaryLoading={aiSummaryLoading}
+            aiSummaryError={aiSummaryError}
+            onGenerateSummary={handleGenerateSummary}
           />
         )}
 

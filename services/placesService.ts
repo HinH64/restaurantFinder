@@ -111,7 +111,21 @@ export const getPlaceDetails = async (
   return new Promise((resolve, reject) => {
     const request: google.maps.places.PlaceDetailsRequest = {
       placeId,
-      fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'price_level', 'photos', 'geometry', 'opening_hours', 'types', 'place_id']
+      fields: [
+        'name',
+        'formatted_address',
+        'rating',
+        'user_ratings_total',
+        'price_level',
+        'photos',
+        'geometry',
+        'opening_hours',
+        'types',
+        'place_id',
+        'website',
+        'url',
+        'formatted_phone_number'
+      ]
     };
 
     placesService!.getDetails(request, (place, status) => {
@@ -129,7 +143,10 @@ export const getPlaceDetails = async (
             lng: place.geometry?.location?.lng() || 0
           },
           openNow: place.opening_hours?.isOpen?.(),
-          types: place.types
+          types: place.types,
+          website: place.website,
+          googleMapsUrl: place.url,
+          phoneNumber: place.formatted_phone_number
         });
       } else {
         resolve(null);

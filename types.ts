@@ -42,4 +42,7 @@ export interface PlaceResult {
   };
   openNow?: boolean;
   types?: string[];
+  website?: string;
+  googleMapsUrl?: string;
+  phoneNumber?: string;
 }
