@@ -1,6 +1,6 @@
 import React from 'react';
 import { FilterState, Language, LocalizedItem } from '../types';
-import { useLocations } from '../hooks/useLocations';
+import { useSideBar } from '../hooks/useSideBar';
 import { UIStrings, RATING_OPTIONS } from '../constants/uiStrings';
 import FilterSection from './FilterSection';
 import { CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon, StarIcon } from './icons';
@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSearch,
   onClear
 }) => {
-  const { countries, getCitiesByCountry, getDistrictsByCity, cuisines } = useLocations();
+  const { countries, getCitiesByCountry, getDistrictsByCity, cuisines } = useSideBar();
 
   const getLabel = (item: LocalizedItem | string) => {
     if (typeof item === 'string') return item;

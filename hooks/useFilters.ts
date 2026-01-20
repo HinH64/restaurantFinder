@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { FilterState } from '../types';
-import { useLocations } from './useLocations';
+import { useSideBar } from './useSideBar';
 import { INITIAL_FILTERS, DEFAULT_MAP_URL } from '../constants/uiStrings';
 
 export interface UseFiltersReturn {
@@ -16,7 +16,7 @@ export interface UseFiltersReturn {
 export function useFilters(
   onFilterChange?: () => void
 ): UseFiltersReturn {
-  const { countries, getCitiesByCountry, getDistrictsByCity } = useLocations();
+  const { countries, getCitiesByCountry, getDistrictsByCity } = useSideBar();
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [manualArea, setManualArea] = useState('');
   const [currentMapUrl, setCurrentMapUrl] = useState(DEFAULT_MAP_URL);

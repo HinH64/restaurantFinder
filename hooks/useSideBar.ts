@@ -26,7 +26,7 @@ export interface SideBarData {
   cuisines: Cuisine[];
 }
 
-export interface UseLocationsReturn {
+export interface UseSideBarReturn {
   countries: Country[];
   getCitiesByCountry: (countryZh: string) => City[];
   getDistrictsByCity: (cityZh: string) => District[];
@@ -38,7 +38,7 @@ export interface UseLocationsReturn {
   findDistrictByName: (name: string) => District | undefined;
 }
 
-export function useLocations(): UseLocationsReturn {
+export function useSideBar(): UseSideBarReturn {
   const [data, setData] = useState<SideBarData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

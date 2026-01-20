@@ -1,13 +1,13 @@
 export { useFilters } from './useFilters';
 export type { UseFiltersReturn } from './useFilters';
 
-export { useLocations } from './useLocations';
+export { useSideBar } from './useSideBar';
 export type {
-  UseLocationsReturn,
+  UseSideBarReturn,
   LocationItem,
   Country,
   City,
   District,
   Cuisine,
-  LocationsData
-} from './useLocations';
+  SideBarData
+} from './useSideBar';
