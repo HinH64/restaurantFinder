@@ -4,8 +4,8 @@ import { FilterState, SearchResult, Language } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || "" });
 
-// Model fallback order: try gemini-3-flash first, then others
-const MODELS = ['gemini-3-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+
+const MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
 
 export interface ReviewSummary {
   highlights: string[];
