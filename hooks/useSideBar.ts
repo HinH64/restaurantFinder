@@ -30,6 +30,7 @@ export interface UseSideBarReturn {
   countries: Country[];
   getCitiesByCountry: (countryZh: string) => City[];
   getDistrictsByCity: (cityZh: string) => District[];
+  getAllDistricts: () => District[];
   cuisines: Cuisine[];
   isLoading: boolean;
   // Helper functions for lookups
@@ -71,6 +72,12 @@ export function useSideBar(): UseSideBarReturn {
     };
   }, [data]);
 
+  const getAllDistricts = useMemo(() => {
+    return (): District[] => {
+      return data?.districts || [];
+    };
+  }, [data]);
+
   const findCountryByName = useMemo(() => {
     return (name: string): Country | undefined => {
       return data?.countries.find(c => c.zh === name || c.en === name);
@@ -93,6 +100,7 @@ export function useSideBar(): UseSideBarReturn {
     countries,
     getCitiesByCountry,
     getDistrictsByCity,
+    getAllDistricts,
     cuisines,
     isLoading,
     findCountryByName,

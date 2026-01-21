@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { FilterState, Language, LocalizedItem } from '../types';
-import { useSideBar } from '../hooks/useSideBar';
+import { useSideBar, District } from '../hooks/useSideBar';
 import { UIStrings, RATING_OPTIONS } from '../constants/uiStrings';
 import FilterSection from './FilterSection';
 import { CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon, StarIcon } from './icons';
@@ -32,7 +32,86 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSearch,
   onClear
 }) => {
-  const { countries, getCitiesByCountry, getDistrictsByCity, cuisines } = useSideBar();
+  const { countries, getCitiesByCountry, getDistrictsByCity, getAllDistricts, cuisines } = useSideBar();
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Get filtered suggestions based on input
+  const suggestions = useMemo(() => {
+    if (!manualArea.trim()) return [];
+    const query = manualArea.toLowerCase().trim();
+    const allDistricts = getAllDistricts();
+
+    return allDistricts.filter(district => {
+      const zhMatch = district.zh.toLowerCase().includes(query);
+      const enMatch = district.en.toLowerCase().includes(query);
+      return zhMatch || enMatch;
+    }).slice(0, 8); // Limit to 8 suggestions
+  }, [manualArea, getAllDistricts]);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node) &&
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Reset highlighted index when suggestions change
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [suggestions]);
+
+  const handleInputChange = (value: string) => {
+    onManualAreaChange(value);
+    setShowSuggestions(true);
+  };
+
+  const handleSelectSuggestion = (district: District) => {
+    const displayValue = lang === 'zh' ? district.zh : district.en;
+    onManualAreaChange(displayValue);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev =>
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev =>
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+          handleSelectSuggestion(suggestions[highlightedIndex]);
+        }
+        break;
+      case 'Escape':
+        setShowSuggestions(false);
+        setHighlightedIndex(-1);
+        break;
+    }
+  };
 
   // Convert LocalizedItem to { label, value } where label is localized and value is always English
   const toOption = (item: LocalizedItem) => ({
@@ -107,18 +186,52 @@ const Sidebar: React.FC<SidebarProps> = ({
               <PencilIcon />
               <span className="text-xs font-bold">{t.manualAreaLabel}</span>
             </div>
-            <input
-              type="text"
-              placeholder={t.manualAreaPlaceholder}
-              value={manualArea}
-              onChange={(e) => onManualAreaChange(e.target.value)}
-              className={`w-full px-3 py-2.5 text-sm rounded-lg border transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-medium
-                ${manualArea.trim()
-                  ? 'border-orange-500 ring-2 ring-orange-500/20'
-                  : 'border-gray-200 dark:border-gray-600 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20'}
-                placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:font-normal
-              `}
-            />
+            <div className="relative">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder={t.manualAreaPlaceholder}
+                value={manualArea}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onFocus={() => manualArea.trim() && setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                autoComplete="off"
+                className={`w-full px-3 py-2.5 text-sm rounded-lg border transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-medium
+                  ${manualArea.trim()
+                    ? 'border-orange-500 ring-2 ring-orange-500/20'
+                    : 'border-gray-200 dark:border-gray-600 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20'}
+                  placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:font-normal
+                `}
+              />
+              {/* Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div
+                  ref={suggestionsRef}
+                  className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden"
+                >
+                  {suggestions.map((district, index) => (
+                    <button
+                      key={district.id}
+                      type="button"
+                      onClick={() => handleSelectSuggestion(district)}
+                      onMouseEnter={() => setHighlightedIndex(index)}
+                      className={`w-full px-3 py-2 text-left text-sm transition-colors flex items-center justify-between
+                        ${index === highlightedIndex
+                          ? 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}
+                      `}
+                    >
+                      <span className="font-medium">
+                        {lang === 'zh' ? district.zh : district.en}
+                      </span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        {lang === 'zh' ? district.en : district.zh}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-3 my-4">
