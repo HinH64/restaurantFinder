@@ -78,39 +78,6 @@ const ResultsPane: React.FC<ResultsPaneProps> = ({
             <div className={`bg-white dark:bg-gray-800 ${
               selectedPlaceId === place.placeId ? '' : 'hover:bg-gray-50 dark:hover:bg-gray-750'
             }`}>
-              {/* Image with gradient overlay */}
-              {place.photoUrl && (
-                <div className="relative w-full h-28 overflow-hidden">
-                  <img
-                    src={place.photoUrl}
-                    alt={place.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-
-                  {/* Rating badge on image */}
-                  {place.rating && (
-                    <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg">
-                      <StarIcon className="h-3.5 w-3.5 text-orange-400" />
-                      <span className="text-xs font-bold text-white">{place.rating}</span>
-                    </div>
-                  )}
-
-                  {/* Open status badge */}
-                  {place.openNow !== undefined && (
-                    <div className={`absolute top-2 right-2 text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm ${
-                      place.openNow
-                        ? 'bg-green-500/80 text-white'
-                        : 'bg-red-500/80 text-white'
-                    }`}>
-                      {place.openNow ? '營業中' : '已關閉'}
-                    </div>
-                  )}
-                </div>
-              )}
-
               {/* Content */}
               <div className="p-3">
                 <div
@@ -123,33 +90,24 @@ const ResultsPane: React.FC<ResultsPaneProps> = ({
                   {place.name}
                 </div>
 
-                {/* Meta info row - only show if no photo (since rating is on photo) */}
-                {!place.photoUrl && (
-                  <div className="flex items-center gap-2 mt-2">
-                    {place.rating && (
-                      <div className="flex items-center gap-1">
-                        <StarIcon className="h-3.5 w-3.5 text-orange-400" />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{place.rating}</span>
-                        {place.userRatingsTotal && (
-                          <span className="text-[10px] text-gray-400">({place.userRatingsTotal})</span>
-                        )}
-                      </div>
-                    )}
-                    <PriceLevel level={place.priceLevel} />
-                    {place.openNow !== undefined && (
-                      <span className={`text-[10px] font-bold ${place.openNow ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
-                        {place.openNow ? '營業中' : '已關閉'}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Price level - show separately when photo exists */}
-                {place.photoUrl && place.priceLevel && (
-                  <div className="mt-2">
-                    <PriceLevel level={place.priceLevel} />
-                  </div>
-                )}
+                {/* Meta info row */}
+                <div className="flex items-center gap-2 mt-2">
+                  {place.rating && (
+                    <div className="flex items-center gap-1">
+                      <StarIcon className="h-3.5 w-3.5 text-orange-400" />
+                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{place.rating}</span>
+                      {place.userRatingsTotal && (
+                        <span className="text-[10px] text-gray-400">({place.userRatingsTotal})</span>
+                      )}
+                    </div>
+                  )}
+                  <PriceLevel level={place.priceLevel} />
+                  {place.openNow !== undefined && (
+                    <span className={`text-[10px] font-bold ${place.openNow ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                      {place.openNow ? '營業中' : '已關閉'}
+                    </span>
+                  )}
+                </div>
 
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2 line-clamp-1">
                   {place.address}
@@ -167,7 +125,7 @@ const ResultsPane: React.FC<ResultsPaneProps> = ({
                     <MapIcon className="h-3 w-3" />
                     {t.viewOnMap}
                   </div>
-                  {place.userRatingsTotal && place.photoUrl && (
+                  {place.userRatingsTotal && (
                     <span className="text-[10px] text-gray-400">
                       {place.userRatingsTotal} reviews
                     </span>

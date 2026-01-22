@@ -46,6 +46,47 @@ A restaurant finder app with Google Maps integration and Google Places API for r
    npm run dev
    ```
 
+## Docker
+
+### Production Build
+
+```bash
+# Build and run with docker-compose
+docker compose --env-file .env.local up -d --build
+
+# Or build directly with Docker
+docker build \
+  --build-arg VITE_GEMINI_API_KEY=your_key \
+  --build-arg VITE_GOOGLE_MAPS_API_KEY=your_key \
+  -t restaurant-finder .
+
+docker run -p 8080:80 restaurant-finder
+```
+
+The app will be available at `http://localhost:8080`
+
+### Development with Hot Reload
+
+```bash
+docker compose --profile dev up dev
+```
+
+The dev server will be available at `http://localhost:13000`
+
+### CI/CD Deployment
+
+For cloud deployments, pass API keys as build arguments in your CI/CD pipeline:
+
+```yaml
+# GitHub Actions example
+- name: Build Docker image
+  run: |
+    docker build \
+      --build-arg VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }} \
+      --build-arg VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }} \
+      -t restaurant-finder .
+```
+
 ## API Costs
 
 ### Google Maps Platform (Free Tier)
