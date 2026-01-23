@@ -2,6 +2,8 @@
 
 A restaurant finder app with Google Maps integration and Google Places API for real restaurant data.
 
+**Live Demo:** [https://restaurant-finder-nine-omega.vercel.app/](https://restaurant-finder-nine-omega.vercel.app/)
+
 ## Features
 
 - **Interactive Map** - Google Maps with clickable markers for each restaurant
