@@ -1,4 +1,4 @@
-# 搵食 (Gourmet Finder)
+# 搵食 (Gourmet Finder / グルメ検索)
 
 A restaurant finder app with Google Maps integration and Google Places API for real restaurant data.
 
@@ -8,7 +8,7 @@ A restaurant finder app with Google Maps integration and Google Places API for r
 - **Real Restaurant Data** - Ratings, photos, addresses, price levels from Google Places API
 - **Bidirectional Selection** - Click on map markers or list items, both stay in sync
 - **Multi-region Support** - Hong Kong, Japan, United Kingdom
-- **Bilingual** - Traditional Chinese (繁體中文) and English
+- **Trilingual** - Traditional Chinese (繁體中文), English, and Japanese (日本語)
 - **Filter Options** - By country, city, district, cuisine type, and rating
 - **Restaurant Details** - View selected restaurant info with "Open in Google Maps" option
 - **Dark Mode** - Toggle between light and dark themes
@@ -131,11 +131,12 @@ You need to enable billing on Google Cloud, but you won't be charged unless you 
 │   ├── useSearch.ts        # Search functionality
 │   └── useSideBar.ts       # Sidebar state management
 ├── constants/
-│   └── uiStrings.ts        # Bilingual UI strings
+│   └── uiStrings.ts        # Trilingual UI strings (zh/en/ja)
 ├── data/
-│   └── sideBar.json        # Sidebar filter configuration
+│   └── sideBar.json        # Sidebar filter configuration (trilingual)
 └── utils/
-    └── loadGoogleMaps.ts   # Google Maps loader utility
+    ├── loadGoogleMaps.ts   # Google Maps loader utility
+    └── localize.ts         # Localization utility functions
 ```
 
 ## License

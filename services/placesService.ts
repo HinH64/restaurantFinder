@@ -1,4 +1,5 @@
 import { FilterState, PlaceResult, Language } from '../types';
+import { getLocalizedText } from '../utils/localize';
 
 // Location coordinates for cities (using English keys)
 const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
@@ -56,7 +57,11 @@ export const searchPlaces = async (
   lang: Language
 ): Promise<PlaceResult[]> => {
   if (!placesService) {
-    throw new Error(lang === 'zh' ? '地圖服務未準備好' : 'Map service not ready');
+    throw new Error(getLocalizedText({
+      zh: '地圖服務未準備好',
+      en: 'Map service not ready',
+      ja: 'マップサービスの準備ができていません'
+    }, lang));
   }
 
   const cityCoords = getCityCoordinates(filters.city);
@@ -94,7 +99,11 @@ export const searchPlaces = async (
       } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
         resolve([]);
       } else {
-        reject(new Error(lang === 'zh' ? '搜尋發生錯誤' : 'Search error'));
+        reject(new Error(getLocalizedText({
+          zh: '搜尋發生錯誤',
+          en: 'Search error',
+          ja: '検索エラー'
+        }, lang)));
       }
     });
   });
@@ -105,7 +114,11 @@ export const getPlaceDetails = async (
   lang: Language
 ): Promise<PlaceResult | null> => {
   if (!placesService) {
-    throw new Error(lang === 'zh' ? '地圖服務未準備好' : 'Map service not ready');
+    throw new Error(getLocalizedText({
+      zh: '地圖服務未準備好',
+      en: 'Map service not ready',
+      ja: 'マップサービスの準備ができていません'
+    }, lang));
   }
 
   return new Promise((resolve, reject) => {

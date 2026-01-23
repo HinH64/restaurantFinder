@@ -106,6 +106,41 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     orderOnline: "Order Online",
     call: "Call",
     directions: "Directions"
+  },
+  ja: {
+    title: "グルメ検索",
+    placeholder: "何をお探しですか？（例：寿司、ハンバーガー）",
+    search: "検索",
+    filters: "フィルター",
+    apply: "レストラン検索",
+    clear: "クリア",
+    loading: "レストランを検索中...",
+    mapResults: "検索結果",
+    viewOnMap: "地図で見る",
+    emptyMap: "該当する場所が見つかりません",
+    global: "グローバル",
+    closeResults: "結果を隠す",
+    manualAreaLabel: "エリアを入力（カスタム）",
+    manualAreaPlaceholder: "例：渋谷、新宿",
+    orDivider: "またはリストから選択",
+    regionLabel: "地域",
+    districtLabel: "エリア",
+    locError: "位置情報を取得できません。権限を確認してください。",
+    selectedRestaurant: "選択中のレストラン",
+    openInGoogleMaps: "Google Mapsで開く",
+    ratingLabel: "最低評価",
+    aiSummary: "AIレビュー要約",
+    aiSummaryLoading: "AIがレビューを分析中...",
+    aiSummaryError: "要約を取得できません",
+    highlights: "良い点",
+    disadvantages: "改善点",
+    popularDishes: "人気メニュー",
+    generateSummary: "AI要約",
+    website: "ウェブサイト",
+    reserve: "予約",
+    orderOnline: "オンライン注文",
+    call: "電話",
+    directions: "経路"
   }
 };
 
@@ -118,11 +153,11 @@ export const INITIAL_FILTERS: FilterState = {
 };
 
 export const RATING_OPTIONS = [
-  { zh: '全部', en: 'All', value: '0' },
-  { zh: '3.0+', en: '3.0+', value: '3' },
-  { zh: '3.5+', en: '3.5+', value: '3.5' },
-  { zh: '4.0+', en: '4.0+', value: '4' },
-  { zh: '4.5+', en: '4.5+', value: '4.5' }
+  { zh: '全部', en: 'All', ja: 'すべて', value: '0' },
+  { zh: '3.0+', en: '3.0+', ja: '3.0+', value: '3' },
+  { zh: '3.5+', en: '3.5+', ja: '3.5+', value: '3.5' },
+  { zh: '4.0+', en: '4.0+', ja: '4.0+', value: '4' },
+  { zh: '4.5+', en: '4.5+', ja: '4.5+', value: '4.5' }
 ];
 
 export const DEFAULT_MAP_URL = 'https://www.google.com/maps?q=Hong+Kong+Island&output=embed';

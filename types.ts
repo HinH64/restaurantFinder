@@ -1,5 +1,5 @@
 
-export type Language = 'zh' | 'en';
+export type Language = 'zh' | 'en' | 'ja';
 export type Theme = 'light' | 'dark';
 
 export interface FilterState {
@@ -14,6 +14,7 @@ export interface LocalizedItem {
   id?: string;
   zh: string;
   en: string;
+  ja: string;
 }
 
 export interface GroundingChunk {

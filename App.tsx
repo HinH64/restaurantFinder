@@ -4,6 +4,7 @@ import { UI_STRINGS } from './constants/uiStrings';
 import { useFilters } from './hooks/useFilters';
 import { searchPlaces, initPlacesService, getCityCoordinates, getPlaceDetails } from './services/placesService';
 import { summarizeRestaurant, ReviewSummary } from './services/geminiService';
+import { getLocalizedText } from './utils/localize';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import ResultsPane from './components/ResultsPane';
@@ -74,7 +75,11 @@ const App: React.FC = () => {
 
   const handleSearch = useCallback(async () => {
     if (!mapReady) {
-      setError(lang === 'zh' ? '地圖載入中，請稍候...' : 'Map is loading, please wait...');
+      setError(getLocalizedText({
+        zh: '地圖載入中，請稍候...',
+        en: 'Map is loading, please wait...',
+        ja: 'マップを読み込んでいます。お待ちください...'
+      }, lang));
       return;
     }
 

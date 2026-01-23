@@ -5,6 +5,7 @@ export interface LocationItem {
   id: string;
   zh: string;
   en: string;
+  ja: string;
 }
 
 export interface Country extends LocationItem {}
@@ -55,18 +56,18 @@ export function useSideBar(): UseSideBarReturn {
   const cuisines = useMemo(() => data?.cuisines || [], [data]);
 
   const getCitiesByCountry = useMemo(() => {
-    return (countryZh: string): City[] => {
+    return (countryName: string): City[] => {
       if (!data) return [];
-      const country = data.countries.find(c => c.zh === countryZh || c.en === countryZh);
+      const country = data.countries.find(c => c.zh === countryName || c.en === countryName || c.ja === countryName);
       if (!country) return [];
       return data.cities.filter(city => city.countryId === country.id);
     };
   }, [data]);
 
   const getDistrictsByCity = useMemo(() => {
-    return (cityZh: string): District[] => {
+    return (cityName: string): District[] => {
       if (!data) return [];
-      const city = data.cities.find(c => c.zh === cityZh || c.en === cityZh);
+      const city = data.cities.find(c => c.zh === cityName || c.en === cityName || c.ja === cityName);
       if (!city) return [];
       return data.districts.filter(district => district.cityId === city.id);
     };
@@ -80,19 +81,19 @@ export function useSideBar(): UseSideBarReturn {
 
   const findCountryByName = useMemo(() => {
     return (name: string): Country | undefined => {
-      return data?.countries.find(c => c.zh === name || c.en === name);
+      return data?.countries.find(c => c.zh === name || c.en === name || c.ja === name);
     };
   }, [data]);
 
   const findCityByName = useMemo(() => {
     return (name: string): City | undefined => {
-      return data?.cities.find(c => c.zh === name || c.en === name);
+      return data?.cities.find(c => c.zh === name || c.en === name || c.ja === name);
     };
   }, [data]);
 
   const findDistrictByName = useMemo(() => {
     return (name: string): District | undefined => {
-      return data?.districts.find(d => d.zh === name || d.en === name);
+      return data?.districts.find(d => d.zh === name || d.en === name || d.ja === name);
     };
   }, [data]);
 

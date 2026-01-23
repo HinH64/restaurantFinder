@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg flex gap-0.5">
           <button
             onClick={() => setLang('zh')}
-            className={`px-3 py-1.5 text-[11px] font-bold rounded-md transition-all ${
+            className={`px-2 py-1.5 text-[11px] font-bold rounded-md transition-all ${
               lang === 'zh'
                 ? 'bg-white dark:bg-gray-600 shadow text-orange-600 dark:text-orange-400'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -66,13 +66,23 @@ const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             onClick={() => setLang('en')}
-            className={`px-3 py-1.5 text-[11px] font-bold rounded-md transition-all ${
+            className={`px-2 py-1.5 text-[11px] font-bold rounded-md transition-all ${
               lang === 'en'
                 ? 'bg-white dark:bg-gray-600 shadow text-orange-600 dark:text-orange-400'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
             }`}
           >
             EN
+          </button>
+          <button
+            onClick={() => setLang('ja')}
+            className={`px-2 py-1.5 text-[11px] font-bold rounded-md transition-all ${
+              lang === 'ja'
+                ? 'bg-white dark:bg-gray-600 shadow text-orange-600 dark:text-orange-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            }`}
+          >
+            JP
           </button>
         </div>
 

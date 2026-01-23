@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { FilterState, Language, LocalizedItem } from '../types';
 import { useSideBar, District } from '../hooks/useSideBar';
 import { UIStrings, RATING_OPTIONS } from '../constants/uiStrings';
+import { getLocalizedText } from '../utils/localize';
 import FilterSection from './FilterSection';
 import { CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon, StarIcon } from './icons';
 
@@ -78,8 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleSelectSuggestion = (district: District) => {
-    const displayValue = lang === 'zh' ? district.zh : district.en;
-    onManualAreaChange(displayValue);
+    onManualAreaChange(getLocalizedText(district, lang));
     setShowSuggestions(false);
     setHighlightedIndex(-1);
   };
@@ -115,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   // Convert LocalizedItem to { label, value } where label is localized and value is always English
   const toOption = (item: LocalizedItem) => ({
-    label: lang === 'zh' ? item.zh : item.en,
+    label: getLocalizedText(item, lang),
     value: item.en
   });
 
@@ -123,7 +123,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   const districtList = getDistrictsByCity(filters.city);
 
   // Add "All Districts" option at the beginning
-  const allDistrictsOption = { label: lang === 'zh' ? '全部地區' : 'All Districts', value: 'All Districts' };
+  const allDistrictsOption = {
+    label: getLocalizedText({ zh: '全部地區', en: 'All Districts', ja: 'すべてのエリア' }, lang),
+    value: 'All Districts'
+  };
 
   const countryOptions = countries.map(toOption);
   const cityOptions = cityList.map(toOption);
@@ -222,7 +225,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       `}
                     >
                       <span className="font-medium">
-                        {lang === 'zh' ? district.zh : district.en}
+                        {getLocalizedText(district, lang)}
                       </span>
                       <span className="text-xs text-gray-400 dark:text-gray-500">
                         {lang === 'zh' ? district.en : district.zh}
@@ -268,7 +271,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Cuisine section */}
         <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
           <FilterSection
-            label={lang === 'zh' ? '菜式' : 'Cuisine'}
+            label={getLocalizedText({ zh: '菜式', en: 'Cuisine', ja: '料理' }, lang)}
             options={cuisineOptions}
             value={filters.cuisine}
             onChange={(v) => onFilterChange('cuisine', v)}
@@ -280,7 +283,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-4 bg-white dark:bg-gray-800">
           <FilterSection
             label={t.ratingLabel}
-            options={RATING_OPTIONS.map(opt => ({ label: lang === 'zh' ? opt.zh : opt.en, value: opt.value }))}
+            options={RATING_OPTIONS.map(opt => ({ label: getLocalizedText(opt, lang), value: opt.value }))}
             value={filters.minRating}
             onChange={(v) => onFilterChange('minRating', v)}
             icon={<StarIcon />}

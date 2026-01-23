@@ -1,6 +1,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { FilterState, SearchResult, Language } from "../types";
+import { getLocalizedText } from "../utils/localize";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || "" });
 
@@ -18,8 +19,9 @@ export const summarizeRestaurant = async (
   address: string,
   lang: Language
 ): Promise<ReviewSummary> => {
-  const prompt = lang === 'zh'
-    ? `請搜尋「${restaurantName}」(位於 ${address}) 的真實用戶評論。
+  const getPrompt = () => {
+    if (lang === 'zh') {
+      return `請搜尋「${restaurantName}」(位於 ${address}) 的真實用戶評論。
 
 請根據網上找到的用戶評論，總結以下資訊：
 
@@ -34,8 +36,26 @@ export const summarizeRestaurant = async (
   "popularDishes": ["推薦菜式1", "推薦菜式2", "推薦菜式3"]
 }
 
-只回覆JSON，不要其他文字。`
-    : `Please search for real user reviews of "${restaurantName}" (located at ${address}).
+只回覆JSON，不要其他文字。`;
+    } else if (lang === 'ja') {
+      return `「${restaurantName}」（住所：${address}）の実際のユーザーレビューを検索してください。
+
+オンラインで見つけたユーザーレビューに基づいて、以下の情報をまとめてください：
+
+1. 良い点 (highlights)：ユーザーがよく挙げる3つの良い点やポジティブな評価
+2. 改善点 (disadvantages)：ユーザーがよく挙げる2つの改善点や課題
+3. 人気メニュー (popularDishes)：ユーザーがおすすめする料理を最大3つ
+
+以下のJSON形式で日本語で回答してください：
+{
+  "highlights": ["良い点1", "良い点2", "良い点3"],
+  "disadvantages": ["改善点1", "改善点2"],
+  "popularDishes": ["人気メニュー1", "人気メニュー2", "人気メニュー3"]
+}
+
+JSONのみを回答し、他のテキストは含めないでください。`;
+    } else {
+      return `Please search for real user reviews of "${restaurantName}" (located at ${address}).
 
 Based on user reviews found online, summarize:
 
@@ -51,6 +71,10 @@ Respond in the following JSON format:
 }
 
 Only respond with JSON, no other text.`;
+    }
+  };
+
+  const prompt = getPrompt();
 
   let lastError: Error | null = null;
 
@@ -94,11 +118,11 @@ Only respond with JSON, no other text.`;
 
   // All models failed
   console.error("All Gemini models failed:", lastError);
-  throw new Error(
-    lang === 'zh'
-      ? "無法獲取餐廳摘要，請稍後再試。"
-      : "Unable to get restaurant summary. Please try again."
-  );
+  throw new Error(getLocalizedText({
+    zh: "無法獲取餐廳摘要，請稍後再試。",
+    en: "Unable to get restaurant summary. Please try again.",
+    ja: "レストランの概要を取得できません。もう一度お試しください。"
+  }, lang));
 };
 
 export const searchRestaurants = async (
@@ -161,5 +185,9 @@ export const searchRestaurants = async (
 
   // All models failed
   console.error("All Gemini search models failed:", lastError);
-  throw new Error(lang === 'zh' ? "搜尋發生錯誤，請稍後再試。" : "Search error. Please try again later.");
+  throw new Error(getLocalizedText({
+    zh: "搜尋發生錯誤，請稍後再試。",
+    en: "Search error. Please try again later.",
+    ja: "検索エラーが発生しました。後でもう一度お試しください。"
+  }, lang));
 };
