@@ -3,6 +3,7 @@ import { PlaceResult } from '../types';
 import { UIStrings } from '../constants/uiStrings';
 import { ReviewSummary } from '../services/geminiService';
 import { CloseIcon } from './icons';
+import BottomSheet from './BottomSheet';
 
 interface RestaurantDetailProps {
   place: PlaceResult;
@@ -150,198 +151,219 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({
     return colors[color] || colors.blue;
   };
 
-  return (
-    <div className="absolute top-0 right-0 bottom-0 w-full sm:w-[420px] bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-2xl animate-in fade-in duration-200 z-40 flex flex-col">
-      {/* Header with close button */}
-      <div className="shrink-0 p-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-gray-800 dark:to-gray-800">
-        <div className="flex items-center justify-between">
-          <p className="text-[10px] font-black text-orange-500 dark:text-orange-400 uppercase tracking-widest">
-            {t.selectedRestaurant}
-          </p>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700 rounded-full transition-all"
-          >
-            <CloseIcon className="h-5 w-5" />
-          </button>
+  // Content shared between desktop and mobile
+  const DetailContent = () => (
+    <>
+      {/* Hero image */}
+      {place.photoUrl && (
+        <div className="w-full h-48 overflow-hidden">
+          <img
+            src={place.photoUrl}
+            alt={place.name}
+            className="w-full h-full object-cover"
+          />
         </div>
-      </div>
+      )}
 
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {/* Hero image */}
-        {place.photoUrl && (
-          <div className="w-full h-48 overflow-hidden">
-            <img
-              src={place.photoUrl}
-              alt={place.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
+      <div className="p-5">
+        {/* Restaurant name and basic info */}
+        <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight">
+          {place.name}
+        </h3>
+
+        <div className="flex items-center flex-wrap gap-3 mt-3">
+          {place.rating && (
+            <div className="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-900/30 px-3 py-1.5 rounded-full">
+              <StarIcon className="h-4 w-4 text-orange-500" />
+              <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{place.rating}</span>
+              {place.userRatingsTotal && (
+                <span className="text-xs text-orange-400 dark:text-orange-500">({place.userRatingsTotal})</span>
+              )}
+            </div>
+          )}
+          {place.priceLevel && (
+            <span className="bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 font-bold text-sm px-3 py-1.5 rounded-full">
+              {'$'.repeat(place.priceLevel)}
+            </span>
+          )}
+          {place.openNow !== undefined && (
+            <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
+              place.openNow
+                ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                : 'bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400'
+            }`}>
+              {place.openNow ? '營業中' : '已關閉'}
+            </span>
+          )}
+        </div>
+
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 leading-relaxed">
+          {place.address}
+        </p>
+
+        {/* Action Links */}
+        {actionLinks.length > 0 && (
+          <>
+            <div className="my-5 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
+            <div className="grid grid-cols-2 gap-2">
+              {actionLinks.map((action, idx) => (
+                <a
+                  key={idx}
+                  href={action.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all ${getColorClasses(action.color)}`}
+                >
+                  {action.icon}
+                  <span className="text-xs font-semibold truncate">{action.label}</span>
+                </a>
+              ))}
+            </div>
+          </>
         )}
 
-        <div className="p-5">
-          {/* Restaurant name and basic info */}
-          <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight">
-            {place.name}
-          </h3>
+        {/* Divider */}
+        <div className="my-5 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
 
-          <div className="flex items-center flex-wrap gap-3 mt-3">
-            {place.rating && (
-              <div className="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-900/30 px-3 py-1.5 rounded-full">
-                <StarIcon className="h-4 w-4 text-orange-500" />
-                <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{place.rating}</span>
-                {place.userRatingsTotal && (
-                  <span className="text-xs text-orange-400 dark:text-orange-500">({place.userRatingsTotal})</span>
-                )}
+        {/* AI Summary Section */}
+        {aiSummary ? (
+          <div className="p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/50">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-1.5 bg-purple-100 dark:bg-purple-800/50 rounded-lg">
+                <SparklesIcon className="h-4 w-4 text-purple-500" />
+              </div>
+              <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                {t.aiSummary}
+              </span>
+            </div>
+
+            {/* Pros */}
+            {aiSummary.highlights.length > 0 && (
+              <div className="mb-4">
+                <span className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">{t.highlights}</span>
+                <div className="mt-2 space-y-2">
+                  {aiSummary.highlights.map((highlight, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-2 bg-white dark:bg-green-900/30 p-3 rounded-xl border border-green-100 dark:border-green-800/50"
+                    >
+                      <CheckIcon className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                      <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {highlight}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-            {place.priceLevel && (
-              <span className="bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 font-bold text-sm px-3 py-1.5 rounded-full">
-                {'$'.repeat(place.priceLevel)}
-              </span>
+
+            {/* Cons */}
+            {aiSummary.disadvantages.length > 0 && (
+              <div className="mb-4">
+                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">{t.disadvantages}</span>
+                <div className="mt-2 space-y-2">
+                  {aiSummary.disadvantages.map((disadvantage, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-2 bg-white dark:bg-amber-900/20 p-3 rounded-xl border border-amber-100 dark:border-amber-800/50"
+                    >
+                      <svg className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                      <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {disadvantage}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
-            {place.openNow !== undefined && (
-              <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
-                place.openNow
-                  ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                  : 'bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400'
-              }`}>
-                {place.openNow ? '營業中' : '已關閉'}
-              </span>
+
+            {/* Popular Dishes */}
+            {aiSummary.popularDishes.length > 0 && (
+              <div>
+                <span className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wide">{t.popularDishes}</span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {aiSummary.popularDishes.map((dish, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs bg-white dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 px-3 py-1.5 rounded-full shadow-sm border border-orange-100 dark:border-orange-800/50"
+                    >
+                      {dish}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 leading-relaxed">
-            {place.address}
-          </p>
-
-          {/* Action Links */}
-          {actionLinks.length > 0 && (
-            <>
-              <div className="my-5 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
-              <div className="grid grid-cols-2 gap-2">
-                {actionLinks.map((action, idx) => (
-                  <a
-                    key={idx}
-                    href={action.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all ${getColorClasses(action.color)}`}
-                  >
-                    {action.icon}
-                    <span className="text-xs font-semibold truncate">{action.label}</span>
-                  </a>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Divider */}
-          <div className="my-5 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
-
-          {/* AI Summary Section */}
-          {aiSummary ? (
-            <div className="p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/50">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 bg-purple-100 dark:bg-purple-800/50 rounded-lg">
-                  <SparklesIcon className="h-4 w-4 text-purple-500" />
-                </div>
-                <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
-                  {t.aiSummary}
-                </span>
-              </div>
-
-              {/* Pros */}
-              {aiSummary.highlights.length > 0 && (
-                <div className="mb-4">
-                  <span className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">{t.highlights}</span>
-                  <div className="mt-2 space-y-2">
-                    {aiSummary.highlights.map((highlight, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2 bg-white dark:bg-green-900/30 p-3 rounded-xl border border-green-100 dark:border-green-800/50"
-                      >
-                        <CheckIcon className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {highlight}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Cons */}
-              {aiSummary.disadvantages.length > 0 && (
-                <div className="mb-4">
-                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">{t.disadvantages}</span>
-                  <div className="mt-2 space-y-2">
-                    {aiSummary.disadvantages.map((disadvantage, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2 bg-white dark:bg-amber-900/20 p-3 rounded-xl border border-amber-100 dark:border-amber-800/50"
-                      >
-                        <svg className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                        </svg>
-                        <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {disadvantage}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Popular Dishes */}
-              {aiSummary.popularDishes.length > 0 && (
-                <div>
-                  <span className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wide">{t.popularDishes}</span>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {aiSummary.popularDishes.map((dish, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs bg-white dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 px-3 py-1.5 rounded-full shadow-sm border border-orange-100 dark:border-orange-800/50"
-                      >
-                        {dish}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+        ) : aiSummaryLoading ? (
+          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-200 dark:border-gray-600">
+            <div className="flex items-center gap-3">
+              <LoadingSpinner className="h-5 w-5 text-purple-500" />
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t.aiSummaryLoading}</span>
             </div>
-          ) : aiSummaryLoading ? (
-            <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-200 dark:border-gray-600">
-              <div className="flex items-center gap-3">
-                <LoadingSpinner className="h-5 w-5 text-purple-500" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">{t.aiSummaryLoading}</span>
-              </div>
-            </div>
-          ) : aiSummaryError ? (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800">
-              <p className="text-sm text-red-600 dark:text-red-400">{aiSummaryError}</p>
-              {onGenerateSummary && (
-                <button
-                  onClick={onGenerateSummary}
-                  className="mt-3 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline"
-                >
-                  {t.generateSummary}
-                </button>
-              )}
-            </div>
-          ) : onGenerateSummary ? (
+          </div>
+        ) : aiSummaryError ? (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800">
+            <p className="text-sm text-red-600 dark:text-red-400">{aiSummaryError}</p>
+            {onGenerateSummary && (
+              <button
+                onClick={onGenerateSummary}
+                className="mt-3 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline"
+              >
+                {t.generateSummary}
+              </button>
+            )}
+          </div>
+        ) : onGenerateSummary ? (
+          <button
+            onClick={onGenerateSummary}
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white text-sm font-bold rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-purple-500/25"
+          >
+            <SparklesIcon className="h-4 w-4" />
+            {t.generateSummary}
+          </button>
+        ) : null}
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop: Side panel */}
+      <div className="hidden lg:flex absolute top-0 right-0 bottom-0 w-[420px] bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-2xl animate-in fade-in duration-200 z-40 flex-col">
+        {/* Header with close button */}
+        <div className="shrink-0 p-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-gray-800 dark:to-gray-800">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-black text-orange-500 dark:text-orange-400 uppercase tracking-widest">
+              {t.selectedRestaurant}
+            </p>
             <button
-              onClick={onGenerateSummary}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white text-sm font-bold rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-purple-500/25"
+              onClick={onClose}
+              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700 rounded-full transition-all"
             >
-              <SparklesIcon className="h-4 w-4" />
-              {t.generateSummary}
+              <CloseIcon className="h-5 w-5" />
             </button>
-          ) : null}
+          </div>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <DetailContent />
         </div>
       </div>
-    </div>
+
+      {/* Mobile: Bottom sheet */}
+      <BottomSheet
+        isOpen={true}
+        onClose={onClose}
+        title={t.selectedRestaurant}
+        initialHeight="half"
+        mobileOnly={true}
+      >
+        <DetailContent />
+      </BottomSheet>
+    </>
   );
 };
 
