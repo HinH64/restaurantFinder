@@ -34,6 +34,7 @@ export interface UIStrings {
   orderOnline: string;
   call: string;
   directions: string;
+  findOnMap: string;
 }
 
 export const UI_STRINGS: Record<Language, UIStrings> = {
@@ -70,7 +71,8 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     reserve: "訂位",
     orderOnline: "線上點餐",
     call: "致電",
-    directions: "路線"
+    directions: "路線",
+    findOnMap: "地圖定位"
   },
   en: {
     title: "Gourmet Finder",
@@ -105,7 +107,8 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     reserve: "Reserve",
     orderOnline: "Order Online",
     call: "Call",
-    directions: "Directions"
+    directions: "Directions",
+    findOnMap: "Find on Map"
   },
   ja: {
     title: "グルメ検索",
@@ -140,7 +143,8 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     reserve: "予約",
     orderOnline: "オンライン注文",
     call: "電話",
-    directions: "経路"
+    directions: "経路",
+    findOnMap: "地図で見る"
   }
 };
 

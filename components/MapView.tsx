@@ -80,7 +80,7 @@ const MapView: React.FC<MapViewProps> = ({
     }
   }, [center, places.length]);
 
-  // Update markers when places change
+  // Update markers when places change (NOT when selection changes - that's handled separately)
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
@@ -98,13 +98,11 @@ const MapView: React.FC<MapViewProps> = ({
       const bounds = new google.maps.LatLngBounds();
 
       places.forEach((place) => {
-        const isSelected = place.placeId === selectedPlaceId;
-
         const pin = new PinElement({
-          background: isSelected ? '#f97316' : '#ea580c',
-          borderColor: isSelected ? '#c2410c' : '#9a3412',
+          background: '#ea580c',
+          borderColor: '#9a3412',
           glyphColor: 'white',
-          scale: isSelected ? 1.3 : 1
+          scale: 1
         });
 
         const marker = new AdvancedMarkerElement({
@@ -164,7 +162,7 @@ const MapView: React.FC<MapViewProps> = ({
     };
 
     updateMarkers();
-  }, [places, selectedPlaceId, onSelectPlace]);
+  }, [places, onSelectPlace]);
 
   // Update marker styles when selection changes
   useEffect(() => {
@@ -189,8 +187,8 @@ const MapView: React.FC<MapViewProps> = ({
         marker.content = pin.element;
       });
 
-      // Center on selected place
-      if (selectedPlaceId) {
+      // Center on selected place (only on desktop to avoid jarring effect with bottom sheet on mobile)
+      if (selectedPlaceId && window.innerWidth >= 1024) {
         const selectedPlace = places.find(p => p.placeId === selectedPlaceId);
         if (selectedPlace && mapInstanceRef.current) {
           mapInstanceRef.current.panTo(selectedPlace.location);

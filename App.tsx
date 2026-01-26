@@ -52,6 +52,7 @@ const App: React.FC = () => {
   const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
   const [showResultsPane, setShowResultsPane] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
 
   // AI Summary state
   const [aiSummary, setAiSummary] = useState<ReviewSummary | null>(null);
@@ -79,6 +80,7 @@ const App: React.FC = () => {
 
   const handleMapReady = useCallback((map: google.maps.Map) => {
     initPlacesService(map);
+    setMapInstance(map);
     setMapReady(true);
   }, []);
 
@@ -174,6 +176,12 @@ const App: React.FC = () => {
     setAiSummaryError(null);
   }, []);
 
+  const handleFindOnMap = useCallback(() => {
+    if (!selectedPlace || !mapInstance) return;
+    mapInstance.panTo(selectedPlace.location);
+    mapInstance.setZoom(17);
+  }, [selectedPlace, mapInstance]);
+
   return (
     <div className="h-screen flex flex-col overflow-hidden text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 font-sans">
       <Header
@@ -233,6 +241,7 @@ const App: React.FC = () => {
             aiSummaryLoading={aiSummaryLoading}
             aiSummaryError={aiSummaryError}
             onGenerateSummary={handleGenerateSummary}
+            onFindOnMap={handleFindOnMap}
           />
         )}
 

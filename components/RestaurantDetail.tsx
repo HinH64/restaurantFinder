@@ -13,6 +13,7 @@ interface RestaurantDetailProps {
   aiSummaryLoading?: boolean;
   aiSummaryError?: string | null;
   onGenerateSummary?: () => void;
+  onFindOnMap?: () => void;
 }
 
 // Action Icons
@@ -78,6 +79,14 @@ const LoadingSpinner: React.FC<{ className?: string }> = ({ className = "h-4 w-4
   </svg>
 );
 
+// Map pin icon for Find on Map button
+const MapPinIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+);
+
 const RestaurantDetail: React.FC<RestaurantDetailProps> = ({
   place,
   onClose,
@@ -85,7 +94,8 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({
   aiSummary,
   aiSummaryLoading,
   aiSummaryError,
-  onGenerateSummary
+  onGenerateSummary,
+  onFindOnMap
 }) => {
   // Build action links
   const actionLinks = [];
@@ -361,6 +371,18 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({
         initialHeight="half"
         mobileOnly={true}
       >
+        {/* Find on Map button - mobile only */}
+        {onFindOnMap && (
+          <div className="px-4 pb-3 border-b border-gray-100 dark:border-gray-700">
+            <button
+              onClick={onFindOnMap}
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-bold text-sm rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-all active:scale-[0.98]"
+            >
+              <MapPinIcon className="h-4 w-4" />
+              {t.findOnMap}
+            </button>
+          </div>
+        )}
         <DetailContent />
       </BottomSheet>
     </>
