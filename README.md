@@ -15,6 +15,8 @@ A restaurant finder app with Google Maps integration and Google Places API for r
 - **Restaurant Details** - View selected restaurant info with "Open in Google Maps" option
 - **Dark Mode** - Toggle between light and dark themes
 - **AI-Powered** - Gemini AI integration for enhanced features
+- **Mobile-Optimized UX** - Bottom sheet pattern for filters, results, and restaurant details on mobile
+- **Find on Map** - Quick button to zoom and pan to selected restaurant location on mobile
 
 ## Prerequisites
 
@@ -116,11 +118,12 @@ You need to enable billing on Google Cloud, but you won't be charged unless you 
 ├── types.ts                # TypeScript types and data constants
 ├── components/
 │   ├── Header.tsx          # App header with search and language/theme toggle
-│   ├── Sidebar.tsx         # Filter sidebar
+│   ├── Sidebar.tsx         # Filter sidebar (desktop) / bottom sheet (mobile)
 │   ├── FilterSection.tsx   # Reusable filter component
 │   ├── MapView.tsx         # Google Maps with markers
-│   ├── ResultsPane.tsx     # Search results list
-│   ├── RestaurantDetail.tsx # Selected restaurant detail panel
+│   ├── ResultsPane.tsx     # Search results list (desktop panel / mobile bottom sheet)
+│   ├── RestaurantDetail.tsx # Selected restaurant detail panel with Find on Map
+│   ├── BottomSheet.tsx     # Reusable draggable bottom sheet for mobile
 │   ├── icons.tsx           # SVG icon components
 │   ├── ErrorBanner.tsx     # Error display component
 │   └── LoadingOverlay.tsx  # Loading state component
