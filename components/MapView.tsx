@@ -178,8 +178,8 @@ const MapView: React.FC<MapViewProps> = ({
         const isSelected = place.placeId === selectedPlaceId;
 
         const pin = new PinElement({
-          background: isSelected ? '#f97316' : '#ea580c',
-          borderColor: isSelected ? '#c2410c' : '#9a3412',
+          background: isSelected ? '#2563eb' : '#ea580c',
+          borderColor: isSelected ? '#1d4ed8' : '#9a3412',
           glyphColor: 'white',
           scale: isSelected ? 1.3 : 1
         });
