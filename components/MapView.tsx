@@ -68,12 +68,17 @@ const MapView: React.FC<MapViewProps> = ({
     initMap();
   }, []);
 
-  // Update center when it changes
+  // Update center when it changes (only zoom if no places, otherwise let fitBounds handle it)
   useEffect(() => {
     if (mapInstanceRef.current && center) {
       mapInstanceRef.current.panTo(center);
+      // Only set zoom when there are no places (e.g., city selection before search)
+      // When places exist, fitBounds in the places effect will handle zooming
+      if (places.length === 0) {
+        mapInstanceRef.current.setZoom(14);
+      }
     }
-  }, [center]);
+  }, [center, places.length]);
 
   // Update markers when places change
   useEffect(() => {
@@ -131,11 +136,30 @@ const MapView: React.FC<MapViewProps> = ({
       });
 
       // Fit map to show all markers
+      if (!mapInstanceRef.current) return;
+
       if (places.length > 1) {
-        mapInstanceRef.current!.fitBounds(bounds, { padding: 50 });
+        // Use smaller padding on mobile for better fit
+        const isMobile = window.innerWidth < 640;
+        const padding = isMobile ? 20 : 50;
+
+        // Fit bounds and then ensure minimum zoom level after bounds are set
+        mapInstanceRef.current.fitBounds(bounds, { padding });
+
+        // Listen for idle to ensure zoom isn't too far out
+        google.maps.event.addListenerOnce(mapInstanceRef.current, 'idle', () => {
+          if (mapInstanceRef.current) {
+            const currentZoom = mapInstanceRef.current.getZoom();
+            // Minimum zoom level: 14 for mobile, 13 for desktop
+            const minZoom = isMobile ? 14 : 13;
+            if (currentZoom !== undefined && currentZoom < minZoom) {
+              mapInstanceRef.current.setZoom(minZoom);
+            }
+          }
+        });
       } else if (places.length === 1) {
-        mapInstanceRef.current!.setCenter(places[0].location);
-        mapInstanceRef.current!.setZoom(16);
+        mapInstanceRef.current.setCenter(places[0].location);
+        mapInstanceRef.current.setZoom(16);
       }
     };
 

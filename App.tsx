@@ -23,7 +23,16 @@ const App: React.FC = () => {
     }
     return 'light';
   });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    // Start with sidebar closed on mobile, open on desktop (lg breakpoint = 1024px)
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return true;
+  });
+
+  // Helper to check if we're on mobile
+  const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 1024;
 
   // Apply theme to document
   useEffect(() => {
@@ -101,6 +110,10 @@ const App: React.FC = () => {
         : results;
       setPlaces(filteredResults);
       setShowResultsPane(true);
+      // Auto-close sidebar on mobile after search
+      if (isMobile()) {
+        setIsSidebarOpen(false);
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
