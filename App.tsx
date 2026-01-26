@@ -168,7 +168,6 @@ const App: React.FC = () => {
         setLang={setLang}
         theme={theme}
         setTheme={setTheme}
-        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         t={t}
       />
 

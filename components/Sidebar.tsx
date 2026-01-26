@@ -135,10 +135,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`absolute lg:relative inset-y-0 left-0 z-40 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out shadow-xl lg:shadow-none flex flex-col shrink-0 ${
+      className={`absolute lg:relative inset-y-0 left-0 z-40 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out shadow-xl lg:shadow-none flex flex-col shrink-0 lg:w-72 lg:translate-x-0 ${
         isOpen
           ? 'w-full sm:w-72 translate-x-0'
-          : 'w-0 -translate-x-full lg:w-0 overflow-hidden'
+          : 'w-0 -translate-x-full overflow-hidden lg:overflow-visible'
       }`}
     >
       {/* Header with action buttons */}
