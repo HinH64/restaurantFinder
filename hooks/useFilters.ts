@@ -7,6 +7,7 @@ export interface UseFiltersReturn {
   filters: FilterState;
   manualArea: string;
   handleFilterChange: (key: keyof FilterState, val: string) => void;
+  handleBooleanFilterChange: (key: keyof FilterState, val: boolean) => void;
   handleManualAreaChange: (val: string) => void;
   handleClearFilters: () => void;
   currentMapUrl: string;
@@ -44,6 +45,10 @@ export function useFilters(
     });
   }, [getCitiesByCountry, onFilterChange]);
 
+  const handleBooleanFilterChange = useCallback((key: keyof FilterState, val: boolean) => {
+    setFilters(prev => ({ ...prev, [key]: val }));
+  }, []);
+
   const handleManualAreaChange = useCallback((val: string) => {
     setManualArea(val);
     if (val.trim()) {
@@ -61,6 +66,7 @@ export function useFilters(
     filters,
     manualArea,
     handleFilterChange,
+    handleBooleanFilterChange,
     handleManualAreaChange,
     handleClearFilters,
     currentMapUrl,

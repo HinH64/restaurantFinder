@@ -69,6 +69,7 @@ const App: React.FC = () => {
     filters,
     manualArea,
     handleFilterChange,
+    handleBooleanFilterChange,
     handleManualAreaChange,
     handleClearFilters: clearFilters
   } = useFilters(handleClearResults);
@@ -202,6 +203,7 @@ const App: React.FC = () => {
           manualArea={manualArea}
           loading={loading}
           onFilterChange={handleFilterChange}
+          onBooleanFilterChange={handleBooleanFilterChange}
           onManualAreaChange={handleManualAreaChange}
           onSearch={handleSearch}
           onClear={handleClearFilters}

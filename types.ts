@@ -8,6 +8,19 @@ export interface FilterState {
   district: string;
   cuisine: string;
   minRating: string;
+  priceLevel: string;
+  // Accessibility options
+  accessibleEntrance: boolean;
+  accessibleSeating: boolean;
+  accessibleParking: boolean;
+  // Children options
+  changingTable: boolean;
+  highChair: boolean;
+  kidsMenu: boolean;
+  // Pet options
+  dogsAllowed: boolean;
+  dogsOutdoorOnly: boolean;
+  dogFriendlyAccommodation: boolean;
 }
 
 export interface LocalizedItem {

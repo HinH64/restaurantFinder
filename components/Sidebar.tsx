@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { FilterState, Language, LocalizedItem } from '../types';
 import { useSideBar, District } from '../hooks/useSideBar';
-import { UIStrings, RATING_OPTIONS } from '../constants/uiStrings';
+import { UIStrings, RATING_OPTIONS, PRICE_LEVEL_OPTIONS, ACCESSIBILITY_OPTIONS, CHILDREN_OPTIONS, PET_OPTIONS } from '../constants/uiStrings';
 import { getLocalizedText } from '../utils/localize';
 import FilterSection from './FilterSection';
-import { CityIcon, MapIcon, FoodIcon, PencilIcon, CloseIcon, StarIcon } from './icons';
+import { CityIcon, DistrictIcon, FoodIcon, PencilIcon, StarIcon, DollarIcon, AccessibilityIcon, ChildIcon, PetIcon } from './icons';
 import BottomSheet from './BottomSheet';
 
 interface SidebarProps {
@@ -16,6 +16,7 @@ interface SidebarProps {
   manualArea: string;
   loading: boolean;
   onFilterChange: (key: keyof FilterState, val: string) => void;
+  onBooleanFilterChange: (key: keyof FilterState, val: boolean) => void;
   onManualAreaChange: (val: string) => void;
   onSearch: () => void;
   onClear: () => void;
@@ -30,6 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   manualArea,
   loading,
   onFilterChange,
+  onBooleanFilterChange,
   onManualAreaChange,
   onSearch,
   onClear
@@ -221,6 +223,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             value={filters.city}
             onChange={(v) => onFilterChange('city', v)}
             icon={<CityIcon />}
+            collapsible={true}
+            defaultCollapsed={false}
           />
           <FilterSection
             key={filters.city}
@@ -228,7 +232,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             options={districtOptions}
             value={filters.district}
             onChange={(v) => onFilterChange('district', v)}
-            icon={<MapIcon />}
+            icon={<DistrictIcon />}
+            collapsible={true}
+            defaultCollapsed={false}
           />
         </div>
       </div>
@@ -241,17 +247,82 @@ const Sidebar: React.FC<SidebarProps> = ({
           value={filters.cuisine}
           onChange={(v) => onFilterChange('cuisine', v)}
           icon={<FoodIcon />}
+          collapsible={true}
+          defaultCollapsed={false}
         />
       </div>
 
-      {/* Rating section */}
-      <div className="p-4 bg-white dark:bg-gray-800">
+      {/* Rating & Price section */}
+      <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 space-y-3">
         <FilterSection
           label={t.ratingLabel}
           options={RATING_OPTIONS.map(opt => ({ label: getLocalizedText(opt, lang), value: opt.value }))}
           value={filters.minRating}
           onChange={(v) => onFilterChange('minRating', v)}
           icon={<StarIcon />}
+          collapsible={true}
+          defaultCollapsed={false}
+        />
+        <FilterSection
+          label={t.priceLevelLabel}
+          options={PRICE_LEVEL_OPTIONS.map(opt => ({ label: getLocalizedText(opt, lang), value: opt.value }))}
+          value={filters.priceLevel}
+          onChange={(v) => onFilterChange('priceLevel', v)}
+          icon={<DollarIcon />}
+          collapsible={true}
+          defaultCollapsed={false}
+        />
+      </div>
+
+      {/* Collapsible filters section - default collapsed */}
+      <div className="p-4 bg-white dark:bg-gray-800 space-y-3">
+        <FilterSection
+          label={t.accessibilityLabel}
+          icon={<AccessibilityIcon />}
+          collapsible={true}
+          defaultCollapsed={true}
+          checkboxOptions={ACCESSIBILITY_OPTIONS.map(opt => ({
+            key: opt.key,
+            label: getLocalizedText(opt, lang)
+          }))}
+          checkboxValues={{
+            accessibleEntrance: filters.accessibleEntrance,
+            accessibleSeating: filters.accessibleSeating,
+            accessibleParking: filters.accessibleParking
+          }}
+          onCheckboxChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
+        />
+        <FilterSection
+          label={t.childFriendlyLabel}
+          icon={<ChildIcon />}
+          collapsible={true}
+          defaultCollapsed={true}
+          checkboxOptions={CHILDREN_OPTIONS.map(opt => ({
+            key: opt.key,
+            label: getLocalizedText(opt, lang)
+          }))}
+          checkboxValues={{
+            changingTable: filters.changingTable,
+            highChair: filters.highChair,
+            kidsMenu: filters.kidsMenu
+          }}
+          onCheckboxChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
+        />
+        <FilterSection
+          label={t.petFriendlyLabel}
+          icon={<PetIcon />}
+          collapsible={true}
+          defaultCollapsed={true}
+          checkboxOptions={PET_OPTIONS.map(opt => ({
+            key: opt.key,
+            label: getLocalizedText(opt, lang)
+          }))}
+          checkboxValues={{
+            dogsAllowed: filters.dogsAllowed,
+            dogsOutdoorOnly: filters.dogsOutdoorOnly,
+            dogFriendlyAccommodation: filters.dogFriendlyAccommodation
+          }}
+          onCheckboxChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
         />
       </div>
     </>

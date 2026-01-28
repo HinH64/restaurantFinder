@@ -18,6 +18,12 @@ export const MapIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5
   </svg>
 );
 
+export const DistrictIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
+    <path d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm9 0a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1V4zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm9 0a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-3z" />
+  </svg>
+);
+
 export const FoodIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
     <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
@@ -82,5 +88,29 @@ export const MoonIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-
 export const StarIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+  </svg>
+);
+
+export const DollarIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
+    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.798 7.45c.512-.67 1.135-.95 1.702-.95s1.19.28 1.702.95a.75.75 0 001.192-.91C12.637 5.55 11.596 5 10.5 5s-2.137.55-2.894 1.54A5.205 5.205 0 006.83 8.5h-.08a.75.75 0 000 1.5h.08a5.205 5.205 0 00.776 1.96C8.363 12.95 9.404 13.5 10.5 13.5s2.137-.55 2.894-1.54a.75.75 0 00-1.192-.91c-.512.67-1.135.95-1.702.95s-1.19-.28-1.702-.95a3.505 3.505 0 01-.547-1.05h2.749a.75.75 0 000-1.5H8.251c.093-.39.274-.741.547-1.05z" />
+  </svg>
+);
+
+export const AccessibilityIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2a2 2 0 100 4 2 2 0 000-4zM9 8a1 1 0 000 2h1v3.586l-3.293 3.293a1 1 0 101.414 1.414L11 15.414V20a1 1 0 102 0v-4.586l2.879 2.879a1 1 0 001.414-1.414L14 13.586V10h1a1 1 0 100-2H9z" />
+  </svg>
+);
+
+export const ChildIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C9.243 2 7 4.243 7 7s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5zm0 8c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3zm-7 6v6h2v-4h10v4h2v-6c0-1.654-1.346-3-3-3H8c-1.654 0-3 1.346-3 3z" />
+  </svg>
+);
+
+export const PetIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M4.5 9.5a2.5 2.5 0 115 0 2.5 2.5 0 01-5 0zM14.5 9.5a2.5 2.5 0 115 0 2.5 2.5 0 01-5 0zM6 4a2 2 0 114 0 2 2 0 01-4 0zM14 4a2 2 0 114 0 2 2 0 01-4 0zM12 12c-2.8 0-5 2.2-5 5v3a2 2 0 002 2h6a2 2 0 002-2v-3c0-2.8-2.2-5-5-5z" />
   </svg>
 );
