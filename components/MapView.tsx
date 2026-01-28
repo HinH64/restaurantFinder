@@ -125,7 +125,7 @@ const MapView: React.FC<MapViewProps> = ({
 
             const content = `
               <div class="map-info-window" style="padding: 12px; max-width: 240px; position: relative;">
-                <button onclick="this.closest('.gm-style-iw-c').style.display='none'" class="map-info-close" style="position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border: none; background: transparent; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <button id="map-info-close-btn" class="map-info-close" style="position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border: none; background: transparent; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">
                   <svg width="14" height="14" viewBox="0 0 14 14" class="map-info-close-icon">
                     <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
                   </svg>
@@ -137,6 +137,16 @@ const MapView: React.FC<MapViewProps> = ({
             `;
             infoWindowRef.current.setContent(content);
             infoWindowRef.current.open(mapInstanceRef.current, marker);
+
+            // Add click handler for close button after content is rendered
+            setTimeout(() => {
+              const closeBtn = document.getElementById('map-info-close-btn');
+              if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                  infoWindowRef.current?.close();
+                });
+              }
+            }, 0);
           }
         });
 
