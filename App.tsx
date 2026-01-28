@@ -3,7 +3,7 @@ import { Language, Theme, PlaceResult } from './types';
 import { UI_STRINGS } from './constants/uiStrings';
 import { useFilters } from './hooks/useFilters';
 import { searchPlaces, initPlacesService, getCityCoordinates, getPlaceDetails } from './services/placesService';
-import { summarizeRestaurant, ReviewSummary } from './services/geminiService';
+import { summarizeRestaurant, ReviewSummary, aiSearchRestaurants } from './services/geminiService';
 import { getLocalizedText } from './utils/localize';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -58,6 +58,9 @@ const App: React.FC = () => {
   const [aiSummary, setAiSummary] = useState<ReviewSummary | null>(null);
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   const [aiSummaryError, setAiSummaryError] = useState<string | null>(null);
+
+  // AI Search state
+  const [aiSearchLoading, setAiSearchLoading] = useState(false);
 
   const handleClearResults = useCallback(() => {
     setPlaces([]);
@@ -183,6 +186,110 @@ const App: React.FC = () => {
     mapInstance.setZoom(17);
   }, [selectedPlace, mapInstance]);
 
+  const handleAISearch = useCallback(async (query: string, useFilters: boolean) => {
+    if (!mapReady) {
+      setError(getLocalizedText({
+        zh: '地圖載入中，請稍候...',
+        en: 'Map is loading, please wait...',
+        ja: 'マップを読み込んでいます。お待ちください...'
+      }, lang));
+      return;
+    }
+
+    setAiSearchLoading(true);
+    setError(null);
+    setSelectedPlace(null);
+    setPlaces([]);
+
+    try {
+      // Get AI search results
+      const aiResults = await aiSearchRestaurants(
+        query,
+        filters.country,
+        lang,
+        useFilters ? filters : undefined,
+        useFilters
+      );
+
+      if (aiResults.restaurants.length === 0) {
+        setError(getLocalizedText({
+          zh: '找不到符合條件的餐廳',
+          en: 'No restaurants found matching your criteria',
+          ja: '条件に合うレストランが見つかりません'
+        }, lang));
+        setAiSearchLoading(false);
+        return;
+      }
+
+      // Search for each restaurant using Places API to get full details
+      const placeResults: PlaceResult[] = [];
+      const placesService = new google.maps.places.PlacesService(mapInstance!);
+
+      for (const restaurant of aiResults.restaurants) {
+        try {
+          const searchQuery = `${restaurant.name} ${restaurant.address}`;
+          const result = await new Promise<PlaceResult | null>((resolve) => {
+            placesService.textSearch(
+              {
+                query: searchQuery,
+                type: 'restaurant'
+              },
+              (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+                  const place = results[0];
+                  resolve({
+                    placeId: place.place_id || '',
+                    name: place.name || restaurant.name,
+                    address: place.formatted_address || restaurant.address,
+                    rating: place.rating,
+                    userRatingsTotal: place.user_ratings_total,
+                    priceLevel: place.price_level,
+                    photoUrl: place.photos?.[0]?.getUrl({ maxWidth: 400, maxHeight: 300 }),
+                    location: {
+                      lat: place.geometry?.location?.lat() || 0,
+                      lng: place.geometry?.location?.lng() || 0
+                    },
+                    openNow: place.opening_hours?.isOpen?.(),
+                    types: place.types
+                  });
+                } else {
+                  resolve(null);
+                }
+              }
+            );
+          });
+
+          if (result) {
+            placeResults.push(result);
+          }
+        } catch (err) {
+          console.error('Failed to search for restaurant:', restaurant.name, err);
+        }
+      }
+
+      // Apply rating filter if useFilters is enabled
+      let filteredResults = placeResults;
+      if (useFilters) {
+        const minRating = parseFloat(filters.minRating) || 0;
+        if (minRating > 0) {
+          filteredResults = placeResults.filter(place => (place.rating || 0) >= minRating);
+        }
+      }
+
+      setPlaces(filteredResults);
+      setShowResultsPane(true);
+
+      // Auto-close sidebar on mobile after search
+      if (isMobile()) {
+        setIsSidebarOpen(false);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setAiSearchLoading(false);
+    }
+  }, [filters, lang, mapReady, mapInstance]);
+
   return (
     <div className="h-screen flex flex-col overflow-hidden text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 font-sans">
       <Header
@@ -191,6 +298,8 @@ const App: React.FC = () => {
         theme={theme}
         setTheme={setTheme}
         t={t}
+        onAISearch={handleAISearch}
+        aiSearchLoading={aiSearchLoading}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
@@ -248,6 +357,7 @@ const App: React.FC = () => {
         )}
 
         {loading && <LoadingOverlay message={t.loading} />}
+        {aiSearchLoading && <LoadingOverlay message={t.aiSearchLoading} />}
       </div>
     </div>
   );

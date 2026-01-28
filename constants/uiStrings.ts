@@ -39,6 +39,10 @@ export interface UIStrings {
   call: string;
   directions: string;
   findOnMap: string;
+  aiSearchPlaceholder: string;
+  aiSearchButton: string;
+  aiSearchLoading: string;
+  useFilters: string;
 }
 
 export const UI_STRINGS: Record<Language, UIStrings> = {
@@ -80,7 +84,11 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     orderOnline: "線上點餐",
     call: "致電",
     directions: "路線",
-    findOnMap: "地圖定位"
+    findOnMap: "地圖定位",
+    aiSearchPlaceholder: "AI 搜尋 (例如: 2026年新開業餐廳)",
+    aiSearchButton: "AI 搜尋",
+    aiSearchLoading: "AI 正在搜尋...",
+    useFilters: "套用篩選條件"
   },
   en: {
     title: "Gourmet Finder",
@@ -120,7 +128,11 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     orderOnline: "Order Online",
     call: "Call",
     directions: "Directions",
-    findOnMap: "Find on Map"
+    findOnMap: "Find on Map",
+    aiSearchPlaceholder: "AI Search (e.g. new restaurants opened in 2026)",
+    aiSearchButton: "AI Search",
+    aiSearchLoading: "AI is searching...",
+    useFilters: "Use Filters"
   },
   ja: {
     title: "グルメ検索",
@@ -160,7 +172,11 @@ export const UI_STRINGS: Record<Language, UIStrings> = {
     orderOnline: "オンライン注文",
     call: "電話",
     directions: "経路",
-    findOnMap: "地図で見る"
+    findOnMap: "地図で見る",
+    aiSearchPlaceholder: "AI検索（例：2026年にオープンした新しいレストラン）",
+    aiSearchButton: "AI検索",
+    aiSearchLoading: "AIが検索中...",
+    useFilters: "フィルターを使用"
   }
 };
 
