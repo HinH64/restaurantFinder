@@ -69,8 +69,9 @@ const MapView: React.FC<MapViewProps> = ({
   }, []);
 
   // Update center when it changes (only zoom if no places, otherwise let fitBounds handle it)
+  // Don't pan to city center when a place is selected - let the selection effect handle that
   useEffect(() => {
-    if (mapInstanceRef.current && center) {
+    if (mapInstanceRef.current && center && !selectedPlaceId) {
       mapInstanceRef.current.panTo(center);
       // Only set zoom when there are no places (e.g., city selection before search)
       // When places exist, fitBounds in the places effect will handle zooming
@@ -78,7 +79,7 @@ const MapView: React.FC<MapViewProps> = ({
         mapInstanceRef.current.setZoom(14);
       }
     }
-  }, [center, places.length]);
+  }, [center, places.length, selectedPlaceId]);
 
   // Update markers when places change (NOT when selection changes - that's handled separately)
   useEffect(() => {
@@ -193,6 +194,14 @@ const MapView: React.FC<MapViewProps> = ({
         if (selectedPlace && mapInstanceRef.current) {
           mapInstanceRef.current.panTo(selectedPlace.location);
         }
+      } else if (!selectedPlaceId && places.length > 1 && mapInstanceRef.current) {
+        // When selection is cleared, fit all markers back into view
+        const bounds = new google.maps.LatLngBounds();
+        places.forEach(place => bounds.extend(place.location));
+
+        const isMobile = window.innerWidth < 640;
+        const padding = isMobile ? 20 : 50;
+        mapInstanceRef.current.fitBounds(bounds, { padding });
       }
     };
 
