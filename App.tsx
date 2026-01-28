@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Language, Theme, PlaceResult } from './types';
 import { UI_STRINGS } from './constants/uiStrings';
 import { useFilters } from './hooks/useFilters';
@@ -359,6 +360,7 @@ const App: React.FC = () => {
         {loading && <LoadingOverlay message={t.loading} />}
         {aiSearchLoading && <LoadingOverlay message={t.aiSearchLoading} />}
       </div>
+      <SpeedInsights />
     </div>
   );
 };
