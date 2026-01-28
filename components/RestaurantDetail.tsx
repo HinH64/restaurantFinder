@@ -87,6 +87,15 @@ const MapPinIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" })
   </svg>
 );
 
+// External link icon for opening in new tab
+const ExternalLinkIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" />
+    <line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+);
+
 const RestaurantDetail: React.FC<RestaurantDetailProps> = ({
   place,
   onClose,
@@ -177,9 +186,22 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({
 
       <div className="p-5">
         {/* Restaurant name and basic info */}
-        <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight">
-          {place.name}
-        </h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight flex-1">
+            {place.name}
+          </h3>
+          {place.googleMapsUrl && (
+            <a
+              href={place.googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-700 dark:hover:text-gray-200 rounded-xl transition-all"
+              title={t.openInGoogleMaps}
+            >
+              <ExternalLinkIcon className="h-5 w-5" />
+            </a>
+          )}
+        </div>
 
         <div className="flex items-center flex-wrap gap-3 mt-3">
           {place.rating && (
