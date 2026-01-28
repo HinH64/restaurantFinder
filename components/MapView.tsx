@@ -116,13 +116,23 @@ const MapView: React.FC<MapViewProps> = ({
         marker.addListener('click', () => {
           onSelectPlace(place);
 
-          // Show info window
+          // Show info window with dark mode support
           if (infoWindowRef.current) {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const bgColor = isDarkMode ? '#1f2937' : '#ffffff';
+            const textColor = isDarkMode ? '#f9fafb' : '#111827';
+            const subtextColor = isDarkMode ? '#9ca3af' : '#666666';
+
             const content = `
-              <div style="padding: 8px; max-width: 250px;">
-                <h3 style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">${place.name}</h3>
-                ${place.rating ? `<div style="color: #f97316; font-size: 12px;">★ ${place.rating} (${place.userRatingsTotal || 0})</div>` : ''}
-                <p style="color: #666; font-size: 12px; margin-top: 4px;">${place.address}</p>
+              <div class="map-info-window" style="padding: 12px; max-width: 240px; position: relative;">
+                <button onclick="this.closest('.gm-style-iw-c').style.display='none'" class="map-info-close" style="position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border: none; background: transparent; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" class="map-info-close-icon">
+                    <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
+                  </svg>
+                </button>
+                <h3 class="map-info-title" style="font-weight: bold; font-size: 14px; margin-bottom: 6px; line-height: 1.3; padding-right: 16px;">${place.name}</h3>
+                ${place.rating ? `<div class="map-info-rating" style="font-size: 13px; margin-bottom: 6px;">★ ${place.rating} (${place.userRatingsTotal || 0})</div>` : ''}
+                <p class="map-info-address" style="font-size: 12px; line-height: 1.4; margin: 0;">${place.address}</p>
               </div>
             `;
             infoWindowRef.current.setContent(content);
