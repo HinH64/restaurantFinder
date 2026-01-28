@@ -86,6 +86,7 @@ Only respond with JSON, no other text.`;
         model,
         contents: prompt,
         config: {
+          temperature: 0,
           tools: [{ googleSearch: {} }],
         },
       });
@@ -292,6 +293,7 @@ Only respond with JSON, no other text. If no matching restaurants are found, ret
         model,
         contents: prompt,
         config: {
+          temperature: 0,
           tools: [{ googleSearch: {} }],
         },
       });
