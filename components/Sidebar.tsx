@@ -136,8 +136,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const districtOptions = [allDistrictsOption, ...districtList.map(toOption)];
   const cuisineOptions = cuisines.map(toOption);
 
-  // Shared filter content for both desktop and mobile
-  const FilterContent = () => (
+  // Shared filter content for both desktop and mobile (using JSX variable, not function component)
+  const filterContent = (
     <>
       {/* Country selector - compact */}
       <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
@@ -281,55 +281,55 @@ const Sidebar: React.FC<SidebarProps> = ({
           icon={<AccessibilityIcon />}
           collapsible={true}
           defaultCollapsed={true}
-          checkboxOptions={ACCESSIBILITY_OPTIONS.map(opt => ({
+          toggleOptions={ACCESSIBILITY_OPTIONS.map(opt => ({
             key: opt.key,
             label: getLocalizedText(opt, lang)
           }))}
-          checkboxValues={{
+          toggleValues={{
             accessibleEntrance: filters.accessibleEntrance,
             accessibleSeating: filters.accessibleSeating,
             accessibleParking: filters.accessibleParking
           }}
-          onCheckboxChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
+          onToggleChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
         />
         <FilterSection
           label={t.childFriendlyLabel}
           icon={<ChildIcon />}
           collapsible={true}
           defaultCollapsed={true}
-          checkboxOptions={CHILDREN_OPTIONS.map(opt => ({
+          toggleOptions={CHILDREN_OPTIONS.map(opt => ({
             key: opt.key,
             label: getLocalizedText(opt, lang)
           }))}
-          checkboxValues={{
+          toggleValues={{
             changingTable: filters.changingTable,
             highChair: filters.highChair,
             kidsMenu: filters.kidsMenu
           }}
-          onCheckboxChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
+          onToggleChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
         />
         <FilterSection
           label={t.petFriendlyLabel}
           icon={<PetIcon />}
           collapsible={true}
           defaultCollapsed={true}
-          checkboxOptions={PET_OPTIONS.map(opt => ({
+          toggleOptions={PET_OPTIONS.map(opt => ({
             key: opt.key,
             label: getLocalizedText(opt, lang)
           }))}
-          checkboxValues={{
+          toggleValues={{
             dogsAllowed: filters.dogsAllowed,
             dogsOutdoorOnly: filters.dogsOutdoorOnly,
             dogFriendlyAccommodation: filters.dogFriendlyAccommodation
           }}
-          onCheckboxChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
+          onToggleChange={(key, val) => onBooleanFilterChange(key as keyof FilterState, val)}
         />
       </div>
     </>
   );
 
-  // Action buttons for search and clear
-  const ActionButtons = () => (
+  // Action buttons for search and clear (using JSX variable, not function component)
+  const actionButtons = (
     <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0">
       <button
         onClick={onSearch}
@@ -354,9 +354,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     <>
       {/* Desktop: Always visible sidebar */}
       <aside className="hidden lg:flex relative inset-y-0 left-0 z-40 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-col shrink-0 w-72">
-        <ActionButtons />
+        {actionButtons}
         <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <FilterContent />
+          {filterContent}
         </div>
       </aside>
 
@@ -368,8 +368,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         initialHeight="full"
         mobileOnly={true}
       >
-        <ActionButtons />
-        <FilterContent />
+        {actionButtons}
+        {filterContent}
       </BottomSheet>
     </>
   );
