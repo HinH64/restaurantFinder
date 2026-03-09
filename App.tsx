@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useCallback, useEffect } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
@@ -17,26 +18,28 @@ import RestaurantDetail from './components/RestaurantDetail';
 
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('zh');
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme') as Theme;
-      if (saved) return saved;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
-  });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
-    // Start with sidebar closed on mobile, open on desktop (lg breakpoint = 1024px)
-    if (typeof window !== 'undefined') {
-      return window.innerWidth >= 1024;
-    }
-    return true;
-  });
+  // Always start with 'light' so server and client render the same initial HTML.
+  // useEffect reads localStorage/matchMedia after hydration to apply the real value.
+  const [theme, setTheme] = useState<Theme>('light');
+  // Always start with true (desktop default) so server and client agree.
+  // useEffect corrects this after hydration based on actual viewport width.
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Helper to check if we're on mobile
   const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 1024;
 
-  // Apply theme to document
+  // Restore theme + sidebar state from browser after hydration (client-only)
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') as Theme | null;
+    if (saved) {
+      setTheme(saved);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    }
+    setIsSidebarOpen(window.innerWidth >= 1024);
+  }, []);
+
+  // Apply theme class to <html> and persist to localStorage whenever it changes
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');

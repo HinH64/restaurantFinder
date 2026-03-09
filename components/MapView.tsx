@@ -163,7 +163,7 @@ const MapView: React.FC<MapViewProps> = ({
         const padding = isMobile ? 20 : 50;
 
         // Fit bounds and then ensure minimum zoom level after bounds are set
-        mapInstanceRef.current.fitBounds(bounds, { padding });
+        mapInstanceRef.current.fitBounds(bounds, padding);
 
         // Listen for idle to ensure zoom isn't too far out
         google.maps.event.addListenerOnce(mapInstanceRef.current, 'idle', () => {
@@ -221,7 +221,7 @@ const MapView: React.FC<MapViewProps> = ({
 
         const isMobile = window.innerWidth < 640;
         const padding = isMobile ? 20 : 50;
-        mapInstanceRef.current.fitBounds(bounds, { padding });
+        mapInstanceRef.current.fitBounds(bounds, padding);
       }
     };
 

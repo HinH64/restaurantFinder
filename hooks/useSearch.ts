@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { FilterState, SearchResult, Language } from '../types';
-import { searchRestaurants } from '../services/geminiService';
 import { GeoLocation } from './useGeolocation';
 
 export interface UseSearchReturn {
@@ -49,7 +48,8 @@ export function useSearch(
     }
 
     try {
-      const data = await searchRestaurants(query, effectiveFilters, lang, location);
+      // searchRestaurants was removed — this hook is now a stub
+    const data = { text: '', sources: [] } as SearchResult;
       setResult(data);
       setShowResultsPane(true);
 
@@ -109,4 +109,3 @@ export function useSearch(
   };
 }
 
-export { searchRestaurants };

@@ -11,7 +11,14 @@ node_modules
 dist
 dist-ssr
 *.local
-.env
+.env.local
+
+# Next.js
+.next/
+out/
+
+# Prisma generated client
+/src/generated/prisma
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +31,4 @@ dist-ssr
 *.sln
 *.sw?
 nul
+/src/generated/prisma

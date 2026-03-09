@@ -1,0 +1,55 @@
+// Learn more about Prisma schema: https://pris.ly/d/prisma-schema
+// Connect to Neon PostgreSQL via Vercel Dashboard → Storage → Create Database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Country {
+  id       String   @id
+  nameZh   String   @map("name_zh")
+  nameEn   String   @map("name_en")
+  nameJa   String   @map("name_ja")
+  cities   City[]
+
+  @@map("countries")
+}
+
+model City {
+  id         String     @id
+  countryId  String     @map("country_id")
+  nameZh     String     @map("name_zh")
+  nameEn     String     @map("name_en")
+  nameJa     String     @map("name_ja")
+  lat        Float?
+  lng        Float?
+  country    Country    @relation(fields: [countryId], references: [id])
+  districts  District[]
+
+  @@map("cities")
+}
+
+model District {
+  id      String @id
+  cityId  String @map("city_id")
+  nameZh  String @map("name_zh")
+  nameEn  String @map("name_en")
+  nameJa  String @map("name_ja")
+  city    City   @relation(fields: [cityId], references: [id])
+
+  @@map("districts")
+}
+
+model Cuisine {
+  id       String  @id
+  nameZh   String  @map("name_zh")
+  nameEn   String  @map("name_en")
+  nameJa   String  @map("name_ja")
+  category String?
+
+  @@map("cuisines")
+}

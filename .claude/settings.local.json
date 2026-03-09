@@ -1,7 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm install next@latest @tailwindcss/postcss)",
+      "Bash(npm uninstall @tailwindcss/vite @vitejs/plugin-react vite)",
+      "Bash(npm install @upstash/redis)",
+      "Bash(npm install @prisma/client)",
+      "Bash(npm install -D prisma)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx prisma generate)",
+      "Bash(npm install dotenv)",
+      "Bash(npm install @prisma/adapter-pg pg @types/pg)",
+      "Bash(npx prisma migrate dev --name init)",
+      "Bash(npx ts-node prisma/seed.ts)",
+      "Bash(npx ts-node --esm prisma/seed.ts)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where npm)",
+      "Bash(where node)"
     ]
   }
 }
